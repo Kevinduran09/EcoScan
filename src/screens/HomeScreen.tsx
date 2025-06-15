@@ -77,7 +77,11 @@ const HomeScreen: React.FC = () => {
 
                         {/* Progress level */}
                         <div>
-                            <LevelProgress stats={stats} />
+                            <LevelProgress stats={{
+                                nivel: userData?.level ?? 1,
+                                nextLevel: userData?.xpToNextLevel ?? 0,
+                                xp: userData?.xp ?? 0
+                            }} />
                         </div>
 
                         {/* Motivational Message */}
@@ -91,15 +95,15 @@ const HomeScreen: React.FC = () => {
 
                         {/* Daily Goals */}
                         <div className='flex flex-row justify-stretch gap-5'>
-                            <StreakCard streak={stats.currentStreak} />
-                            <StatsCard title='Logros' value={`${stats.unlockedAchievements}/${achievements.length}`} />
+                            <StreakCard streak={userData?.dailyMissionStreak || 0} />
+                            <StatsCard title='Logros' value={`${userData?.achievements.length}/${achievements.length}`} />
                         </div>
 
                         {/* Progress today */}
                         <TodayProgress items={todayItems} />
                         <QuickActions />
 
-                        <Recents/>
+                        <Recents />
                         <Button
                             fullWidth
                             onClick={() => setleveUp(true)}
@@ -112,7 +116,7 @@ const HomeScreen: React.FC = () => {
 
                     show={leveUp}
                     nivel={1}
-                    onClose={() => {setleveUp(false) }}
+                    onClose={() => { setleveUp(false) }}
                 />
             </IonContent>
         </IonPage>

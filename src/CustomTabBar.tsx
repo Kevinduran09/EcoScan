@@ -32,7 +32,7 @@ export const CustomTabBar = () => {
                 className="!bg-transparent relative"
             >
                 <div
-                    className='absolute -top-8  bg-green-600 flex justify-center items-center  p-2 rounded-full m-2 shadow-2xl  border-gray-600/10'
+                    className=' bg-green-600 flex justify-center items-center  p-2 rounded-full m-2 shadow-2xl  border-gray-600/10'
                 >
                     <IonIcon aria-hidden="true"
                         icon={location.pathname === '/camera' ? camera : cameraOutline}

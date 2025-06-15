@@ -34,7 +34,7 @@ initializeStatusBar();
 const ProfileScreen: React.FC = () => {
   const history = useHistory();
   const {user,userData} = useAuth()
-
+  const TOTALEXP = userData?.xp
   console.log(userData);
   
   const handleBack = () => {
@@ -88,9 +88,9 @@ const ProfileScreen: React.FC = () => {
               <div className='w-full px-2'>
                 <p className="text-white text-xl mb-3">Progreso del nivel</p>
                 <div className="w-full bg-white/30 rounded-full h-4 mb-4 shadow-inner">
-                  <div className="bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full transition-all duration-500" style={{ width: '20%' }}></div>
+                  <div className="bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full transition-all duration-500" style={{ width: `${TOTALEXP}%` }}></div>
                 </div>
-                <p className="text-white text-md mb-4">20 XP / 100 XP para el siguiente nivel</p>
+                <p className="text-white text-md mb-4">{userData?.xp} XP / {userData?.xpToNextLevel} XP para el siguiente nivel</p>
               </div>
 
               <ProfileStadistics />
