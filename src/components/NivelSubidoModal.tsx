@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { IonModal, IonButton } from '@ionic/react';
-import confetti from 'canvas-confetti';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Howl } from 'howler';
-import Lottie from 'lottie-react';
-import celebration from '../animations/celebration.json'
+import confetti from 'canvas-confetti'; // para confetis
+import { Haptics, ImpactStyle } from '@capacitor/haptics'; // para funcionaldiades como vibrar
+import { Howl } from 'howler';  // para reproducir sonidos
+import Lottie from 'lottie-react'; //para svg animados
+import celebration from '../animations/celebration.json' 
 interface Props {
     show: boolean;
     nivel: number;

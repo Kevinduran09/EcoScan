@@ -8,6 +8,9 @@ import { arrowBack, camera, cameraReverse, flash, flashOff, square } from 'ionic
 import { useHistory } from 'react-router-dom';
 import NivelSubidoModal from '../components/NivelSubidoModal';
 import Title from '../components/ui/Title';
+import { CameraService } from '../services/firebase/CameraService';
+import { ReponseInterface } from '../types/responseTypes';
+import { PreviewView } from '../components/PreviewView';
 const initializeStatusBar = async () => {
   try {
     await StatusBar.setStyle({ style: Style.Light });
@@ -17,11 +20,22 @@ const initializeStatusBar = async () => {
     console.error('Error al configurar StatusBar:', error);
   }
 };
-
+interface PreviewData {
+  show: boolean;
+  title: string;
+  content: string;
+  imageUrl: string | null;
+}
 // Inicializar StatusBar
 initializeStatusBar();
 const CameraScreen: React.FC = () => {
   const history = useHistory()
+  const [previewData, setPreviewData] = useState<PreviewData>({
+    show: false,
+    title: '',
+    content: '',
+    imageUrl: null,
+  });
   const [isCamaraActive, setIsCamaraActive] = useState(false)
   const [isFlashOn, setIsFlashOn] = useState(false)
   const [isFrontCamera, setIsFrontCamera] = useState(false)
@@ -81,13 +95,26 @@ const CameraScreen: React.FC = () => {
         const base64Image = result.value.startsWith('data:')
           ? result.value
           : `data:image/jpeg;base64,${result.value}`;
-        setImage(base64Image);
-        console.log('Imagen capturada:', base64Image);
+        // setImage(base64Image);
 
+
+        const camaraService = new CameraService()
+        const response: ReponseInterface = await camaraService.analyzeImageWithIA(base64Image)
+        setPreviewData({
+          show: true,
+          title: response.tipo,
+          content: response.consejo || 'Sin resultados',
+          imageUrl: base64Image,
+        });
+
+        
       }
     } catch (error) {
       console.error('Error al tomar la foto: ', error)
     }
+  }
+  const saveInFirebaseDb = ()=>{
+    // aplicar logica para guardar la imagen en firebase db
   }
   const toggleFlash = async () => {
     if (!isNative) {
@@ -135,6 +162,16 @@ const CameraScreen: React.FC = () => {
       <IonContent fullscreen className='my-custom-camera-preview-content'>
         <div id='camera-preview' className='w-full h-full'></div>
 
+        {/* preview result */}
+        {previewData.show && previewData.imageUrl && (
+          <PreviewView
+            show={previewData.show}
+            title={previewData.title}
+            content={previewData.content}
+            imageUrl={previewData.imageUrl}
+            setShow={(val: boolean) => setPreviewData(prev => ({ ...prev, show: val }))}
+          />
+        )}
         {/* top bar */}
         <div className='absolute top-0 left-0 right-0 flex items-center justify-between px-2 py-3 '>
           <IonButton
@@ -192,6 +229,7 @@ const CameraScreen: React.FC = () => {
               className={`text-2xl ${isNative ? 'text-white' : 'text-gray-500'}`}
             />
           </IonButton>
+
         </div>        {/* focus square mejorado */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
           <div className="relative size-64">
@@ -204,7 +242,9 @@ const CameraScreen: React.FC = () => {
           <div className="absolute w-full  bg-black/80 rounded-md -bottom-4 left-1/2 -translate-x-1/2 top-[277px]">
             <p className="text-white text-center text-sm ">Centra el objeto y toca el boton para escanearlo</p>
           </div>
+
         </div>
+
 
         <NivelSubidoModal
           url={image}

@@ -8,7 +8,7 @@ const TAB_ROUTES = ['/home', '/map', '/history', '/profile'];
 export const CustomTabBar = () => {
     const location = useLocation();
     if (!TAB_ROUTES.includes(location.pathname)) return null;
-    
+
     return (
         <IonTabBar slot="bottom"
             className="rounded-t-2xl shadow-lg h-16 z-50 custom-tabbar "
@@ -29,14 +29,18 @@ export const CustomTabBar = () => {
             <IonTabButton
                 tab="camera"
                 href="/camera"
-                className=" size-14 bg-green-600 rounded-full flex flex-col items-center justify-center shadow-2xl border-4 border-gray-600/10"
-                style={{ boxShadow: '0 8px 32px 0 rgba(34,197,94,0.35)' }}
+                className="!bg-transparent relative"
             >
-                <IonIcon aria-hidden="true"
-                    icon={location.pathname === '/camera' ? camera : cameraOutline}
-                    className='text-white text-4xl mb-1 z-10'
-                />
-                <IonLabel className="text-white text-xs font-bold">Cámara</IonLabel>
+                <div
+                    className='absolute -top-8  bg-green-600 flex justify-center items-center  p-2 rounded-full m-2 shadow-2xl  border-gray-600/10'
+                >
+                    <IonIcon aria-hidden="true"
+                        icon={location.pathname === '/camera' ? camera : cameraOutline}
+                        className='text-white size-9 p-0  z-10'
+                    />
+
+                </div>
+                {/* <IonLabel className="text-white text-xs font-bold">Cámara</IonLabel> */}
             </IonTabButton>
             <IonTabButton tab="history" href="/history">
                 <IonIcon aria-hidden="true"

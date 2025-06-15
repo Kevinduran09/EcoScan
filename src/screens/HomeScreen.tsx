@@ -1,5 +1,5 @@
 import { IonContent, IonPage } from '@ionic/react';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import '../theme/variables.css';
 import LevelProgress from '../components/LevelProgress';
 import Card from '../components/Card';
@@ -14,6 +14,10 @@ import Container from '../components/ui/Container';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Link } from 'react-router-dom';
 import Avatar from '../components/Avatar';
+import { useAuth } from '../contexts/authContext';
+import NivelSubidoModal from '../components/NivelSubidoModal';
+import Button from '../components/ui/Button';
+import { Recents } from '../components/Recents';
 const initializeStatusBar = async () => {
     try {
         await StatusBar.setStyle({ style: Style.Light });
@@ -29,13 +33,14 @@ const initializeStatusBar = async () => {
 initializeStatusBar();
 const HomeScreen: React.FC = () => {
     const { stats, achievements } = data.data;
+    const [leveUp, setleveUp] = useState(false)
     const [todayItems] = useState([2, 3, 4]);
-
+    const { user, userData } = useAuth();
     const getGreeting = () => {
         const hour = new Date().getHours();
-        if (hour < 12) return '¡Buenos días!';
-        if (hour < 18) return '¡Buenas tardes!';
-        return '¡Buenas noches!';
+        if (hour < 12) return '¡Buenos días';
+        if (hour < 18) return '¡Buenas tardes';
+        return '¡Buenas noches';
     };
 
     const getMotivationalMessage = () => {
@@ -57,15 +62,15 @@ const HomeScreen: React.FC = () => {
                         <div className='flex justify-between items-center mb-5'>
                             <div className='space-y-1'>
                                 <Title variant="h2" color="white">
-                                    {getGreeting()}, Jose!
+                                    {getGreeting()},  {user?.displayName?.split(' ')[0]}!
                                 </Title>
                                 <Text size="base" color="white">
-                                    Reciclador Nivel 1
+                                    Reciclador Nivel {userData?.level}
                                 </Text>
                             </div>
                             <div className='bg-white rounded-full size-15 flex items-center justify-center'>
                                 <Link to="/profile">
-                                    <Avatar size={56}  />
+                                    <Avatar size={56} url={userData?.avatar} />
                                 </Link>
                             </div>
                         </div>
@@ -78,7 +83,7 @@ const HomeScreen: React.FC = () => {
                         {/* Motivational Message */}
                         <div>
                             <Card className='!py-6'>
-                                <Text size="base" weight="semibold" color="black" className="text-center">
+                                <Text size="base" className="text-center text-zinc-600/90 !font-bold">
                                     {getMotivationalMessage()}
                                 </Text>
                             </Card>
@@ -93,8 +98,22 @@ const HomeScreen: React.FC = () => {
                         {/* Progress today */}
                         <TodayProgress items={todayItems} />
                         <QuickActions />
+
+                        <Recents/>
+                        <Button
+                            fullWidth
+                            onClick={() => setleveUp(true)}
+                        >
+                            Subir nivel
+                        </Button>
                     </Container>
                 </div>
+                <NivelSubidoModal
+
+                    show={leveUp}
+                    nivel={1}
+                    onClose={() => {setleveUp(false) }}
+                />
             </IonContent>
         </IonPage>
     );

@@ -3,7 +3,7 @@ import { IonIcon } from '@ionic/react';
 
 interface ButtonProps {
     children: React.ReactNode;
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost'| 'info';
     size?: 'sm' | 'md' | 'lg';
     icon?: string;
     iconPosition?: 'left' | 'right';
@@ -30,13 +30,14 @@ const Button: React.FC<ButtonProps> = ({
         primary: 'bg-[#4CAF50] text-white hover:bg-[#43A047] focus:ring-[#4CAF50]',
         secondary: 'bg-[#2196F3] text-white hover:bg-[#1E88E5] focus:ring-[#2196F3]',
         outline: 'border-2 border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50]/10 focus:ring-[#4CAF50]',
-        ghost: 'text-[#4CAF50] hover:bg-[#4CAF50]/10 focus:ring-[#4CAF50]'
+        ghost: 'text-[#4CAF50] hover:bg-[#4CAF50]/10 focus:ring-[#4CAF50]',
+        info: 'bg-[#969996] text-white hover:bg-[#969996] focus:ring-[#969796]'
     };
 
     const sizeClasses = {
-        sm: 'px-3 py-1.5 text-sm',
-        md: 'px-4 py-2 text-base',
-        lg: 'px-6 py-3 text-lg'
+        sm: '!px-3 !py-1.5 !text-sm',
+        md: '!px-2 !py-3 !text-base',
+        lg: '!px-6 !py-3 !text-lg'
     };
 
     const widthClass = fullWidth ? 'w-full' : '';
@@ -51,7 +52,7 @@ const Button: React.FC<ButtonProps> = ({
         ${className}
     `;
 
-    const iconClasses = size === 'sm' ? 'size-4' : size === 'md' ? 'size-5' : 'size-6';
+    const iconClasses = size === 'sm' ? '!size-5' : size === 'md' ? '!size-6' : '!size-7';
 
     const renderContent = () => {
         if (!icon) return children;

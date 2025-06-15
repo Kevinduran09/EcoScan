@@ -48,7 +48,7 @@ const ProfileStadistics = () => {
 
                 }
             </div>
-            <Logout />
+          
         </div>
     )
 }

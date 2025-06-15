@@ -1,4 +1,3 @@
-"use client"
 
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication"
 import { useHistory } from "react-router-dom"
@@ -15,14 +14,18 @@ const HandleGoogleSignIn = () => {
   const signInWithGoogle = useCallback(async () => {
     try {
       setLoading(true)
+      
       const result = await FirebaseAuthentication.signInWithGoogle()
 
       if (result?.user) {
         await authReady
 
-        const credential = GoogleAuthProvider.credential(result.credential?.idToken)
+        const credential = await GoogleAuthProvider.credential(result.credential?.idToken)
 
-        await signInWithCredential(auth, credential)
+        const userCredentials = await signInWithCredential(auth, credential)
+
+        console.log(userCredentials);
+        
         setLoading(false)
         history.push("/home")
       } else {
@@ -40,6 +43,12 @@ const HandleGoogleSignIn = () => {
   }
 
   return (
+   <>
+   {
+    loading && (
+      <IonLoading isOpen message="Cargando sesión..." />
+    )
+   }
     <button
       onClick={signInWithGoogle}
       className="bg-white text-black !border-1 !border-zinc-300 w-full !py-2 !rounded-lg flex justify-center items-center gap-3 hover:bg-gray-300/30 transition-all duration-300 font-medium"
@@ -47,6 +56,7 @@ const HandleGoogleSignIn = () => {
       <Google className="size-6" />
       Continuar con Google
     </button>
+   </>
   )
 }
 

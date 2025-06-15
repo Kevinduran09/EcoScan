@@ -26,7 +26,7 @@ const TodayProgress: React.FC<TodayProgressProps> = ({ items }) => {
                     <div className='w-full h-2 bg-white/20 rounded-full mb-2.5'>
                         <div className='h-full rounded-full bg-green-500' style={{ width: `${progressPercentage}%` }}></div>
                     </div>
-                    <Text size="base" color="black" className="text-center mt-2.5">
+                    <Text size="base" color="black" className="text-center mt-2.5 text-zinc-600/90 !font-semibold">
                         {items.length >= TARGET_ITEMS ? "¡Increíble! Ya cumpliste tu meta diaria 🎉" : `${TARGET_ITEMS - items.length} más para mantener tu racha 🔥`}
                     </Text>
                 </div>

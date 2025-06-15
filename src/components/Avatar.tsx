@@ -1,14 +1,15 @@
 import React from 'react'
-import data from '../data.json'
+
 import Lottie from 'lottie-react';
 import fire2 from '../animations/fire-level-2.json'
 
 interface AvatarProps {
     size: number;
+    url:string | undefined
 }
 
-const Avatar: React.FC<AvatarProps> = ({ size }) => {
-    const { stats: { nivel }, user: { imagen } } = data.data
+const Avatar: React.FC<AvatarProps> = ({ size,url }) => {
+    
     // Calcula el tamaño del círculo del nivel (por ejemplo, 35% del avatar)
     const badgeSize = Math.round(size * 0.45);
 
@@ -18,7 +19,7 @@ const Avatar: React.FC<AvatarProps> = ({ size }) => {
                 className="relative bg-gradient-to-tr from-green-400 to-green-700 p-1 rounded-full shadow-lg"
             >
                 <div className={`rounded-full w-${size} h-${size} flex items-center justify-center overflow-hidden`}>
-                    <img src={imagen} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={`${url}=s128`} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
             </div>
             <div
