@@ -1,0 +1,21 @@
+.custom-tab-container {
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px;
+}
+
+.custom-tab-container ion-segment-button {
+    flex: 1;
+    border-radius: 20px;
+    --background: transparent;
+    color: #ffffff !important;
+    font-weight: 600;
+    text-align: center;
+    font-size: small !important;
+}
+
+.custom-tab-container ion-segment-button.active-tab {
+    background-color: white !important;
+    color: #FF6B35 !important;
+    --indicator-height: 0px;
+}

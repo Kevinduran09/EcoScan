@@ -5,6 +5,7 @@ import { IonRouterOutlet, IonTabs } from '@ionic/react'
 import HomeScreen from './HomeScreen'
 
 import MapScreen from './MapScreen'
+import ChallengeScreen  from './ChallengeScreen'
 import HistoryScreen from './HistoryScreen'
 import ProfileScreen from './ProfileScreen'
 import { StatusBar, Style } from '@capacitor/status-bar'
@@ -31,6 +32,9 @@ const TabLayout = () => {
                 </Route>
                 <Route exact path="/map">
                     <MapScreen />
+                </Route>
+                <Route exact path='/challenge'>
+                    <ChallengeScreen/>
                 </Route>
                 <Route exact path="/history">
                     <HistoryScreen />

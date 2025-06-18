@@ -42,19 +42,25 @@ const CameraScreen: React.FC = () => {
   const isNative = Capacitor.isNativePlatform()
   const [image, setImage] = useState<string | null>(null);
   useEffect(() => {
-    startCamera()
-    return () => {
-      stopCamera()
-    }
-  }, [])
+    console.log('montando cámara...');
+    startCamera();
 
+    return () => {
+      stopCamera();
+    };
+  }, []);
   const handleBack = () => {
+    stopCamera()
     history.goBack()
   }
   const startCamera = async () => {
+    if (isCamaraActive) {
+      console.log("La cámara ya está activa.");
+      return;
+    }
     try {
       const cameraPreviewOptions: CameraPreviewOptions = isNative ? {
-        position: 'rear',
+        position: isFrontCamera ? 'front' : 'rear',
         width: window.innerWidth,
         height: window.innerHeight,
         toBack: true,
@@ -63,22 +69,26 @@ const CameraScreen: React.FC = () => {
       } : {
         parent: 'camera-preview',
         className: 'camera-preview',
-      }
+      };
 
+      console.log("Iniciando cámara con opciones:", cameraPreviewOptions);
       await CameraPreview.start(cameraPreviewOptions);
-      setIsCamaraActive(true)
+      setIsCamaraActive(true);
+      console.log("Cámara iniciada correctamente.");
     } catch (error) {
       console.error('Error al iniciar la cámara:', error);
     }
-  }
+  };
+
   const stopCamera = async () => {
     try {
       await CameraPreview.stop();
-      setIsCamaraActive(false)
+      setIsCamaraActive(false);
+      console.log("Cámara detenida");
     } catch (error) {
-      console.error('Error al detener la cámara:', error);
+      console.warn("Error al detener la cámara", error);
     }
-  }
+  };
   const takePicture = async () => {
     console.log('Tomando foto...');
 
@@ -107,15 +117,13 @@ const CameraScreen: React.FC = () => {
           imageUrl: base64Image,
         });
 
-        
+
       }
     } catch (error) {
       console.error('Error al tomar la foto: ', error)
     }
   }
-  const saveInFirebaseDb = ()=>{
-    // aplicar logica para guardar la imagen en firebase db
-  }
+
   const toggleFlash = async () => {
     if (!isNative) {
       console.log('La funcionalidad de flash no está disponible en la web');

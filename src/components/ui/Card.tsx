@@ -2,7 +2,7 @@ import React from 'react';
 
 interface CardProps {
     children: React.ReactNode;
-    variant?: 'default' | 'outlined' | 'elevated';
+    variant?: 'default' | 'outlined' | 'elevated' | 'solid';
     padding?: 'none' | 'sm' | 'md' | 'lg';
     className?: string;
     onClick?: () => void;
@@ -18,7 +18,8 @@ const Card: React.FC<CardProps> = ({
     const variantClasses = {
         default: 'bg-white/20 backdrop-blur-sm',
         outlined: 'border border-white/20 bg-transparent',
-        elevated: 'bg-white/20 shadow-lg'
+        elevated: 'bg-white/20 shadow-lg',
+        solid: 'bg-white shadow-lg'
     };
 
     const paddingClasses = {
@@ -36,7 +37,7 @@ const Card: React.FC<CardProps> = ({
     `;
 
     return (
-        <div 
+        <div
             className={baseClasses}
             onClick={onClick}
             style={{ cursor: onClick ? 'pointer' : 'default' }}

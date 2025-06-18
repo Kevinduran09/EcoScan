@@ -7,7 +7,6 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import ProfileStadistics from '../components/ProfileStadistics';
 import { useHistory } from 'react-router';
 import Avatar from '../components/Avatar';
-import Logout from '../components/firebase/logout';
 import { signOut } from 'firebase/auth';
 import { auth } from '../core/firebaseConfig';
 import { useAuth } from '../contexts/authContext';
@@ -21,7 +20,7 @@ const initializeStatusBar = async () => {
 };
 
 // Inicializar StatusBar
-initializeStatusBar();
+
 
 // Datos de ejemplo del usuario (puedes reemplazar por datos reales)
 // const user = {
@@ -32,6 +31,7 @@ initializeStatusBar();
 // };
 
 const ProfileScreen: React.FC = () => {
+  initializeStatusBar();
   const history = useHistory();
   const {user,userData} = useAuth()
   const TOTALEXP = userData?.xp
@@ -52,7 +52,7 @@ const ProfileScreen: React.FC = () => {
   }
   return (
     <IonPage className=''>
-      <IonHeader >
+      <IonHeader className='!shadow-none'>
         <IonToolbar>
           <div className="py-2 px-3 bg-[#4CAF50] shadow-lg h-18">
             <div className="flex items-center justify-between w-full ">
@@ -67,7 +67,7 @@ const ProfileScreen: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <div className="gradient-primary   flex-1">
+        <div className="gradient-primary  flex-1">
           <Container padding="sm" className="space-y-5" >
 
             {/* Header */}

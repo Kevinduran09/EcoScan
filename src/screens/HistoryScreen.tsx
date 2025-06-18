@@ -1,7 +1,13 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import React from 'react';
+import { generateMissions } from '../utils/generateMissions';
 
 const HistoryScreen: React.FC = () => {
+  
+  const missiones = generateMissions(5)
+  
+  console.log(missiones);
+  
   return (
     <IonPage>
       <IonHeader>
@@ -10,12 +16,7 @@ const HistoryScreen: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Historial</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        {/* Aquí irá el contenido del historial */}
+       
       </IonContent>
     </IonPage>
   );

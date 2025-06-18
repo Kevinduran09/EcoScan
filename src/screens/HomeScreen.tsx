@@ -1,5 +1,5 @@
 import { IonContent, IonPage } from '@ionic/react';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import '../theme/variables.css';
 import LevelProgress from '../components/LevelProgress';
 import Card from '../components/Card';
@@ -32,7 +32,7 @@ const initializeStatusBar = async () => {
 // Inicializar StatusBar
 initializeStatusBar();
 const HomeScreen: React.FC = () => {
-    const { stats, achievements } = data.data;
+    const { achievements } = data.data;
     const [leveUp, setleveUp] = useState(false)
     const [todayItems] = useState([2, 3, 4]);
     const { user, userData } = useAuth();
