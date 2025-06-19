@@ -1,4 +1,4 @@
-export type MissionType = 'material_recycle' | 'item_category' | 'shared_mission'
+export type MissionType = 'material_recycle' | 'item_category' | 'shared_mission' |"count_recycle"
 
 type BaseMission = {
   id: string;
@@ -24,10 +24,10 @@ type ItemCategoryMission = BaseMission & {
   xp: number;
 }
 
-type SharedMission = BaseMission & {
-  type: 'shared_mission';
+type CountMission = BaseMission & {
+  type: 'count_recycle';
   target: number;
   xp: number;
 }
 
-export type Mission = MaterialRecycleMission | ItemCategoryMission | SharedMission;
+export type Mission = MaterialRecycleMission | ItemCategoryMission | CountMission;

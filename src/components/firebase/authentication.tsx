@@ -38,17 +38,11 @@ const HandleGoogleSignIn = () => {
     }
   }, [history])
 
-  if (loading) {
-    return <IonLoading isOpen message="Cargando sesión..." />
-  }
+ 
 
   return (
    <>
-   {
-    loading && (
-      <IonLoading isOpen message="Cargando sesión..." />
-    )
-   }
+ 
     <button
       onClick={signInWithGoogle}
       className="bg-white text-black !border-1 !border-zinc-300 w-full !py-2 !rounded-lg flex justify-center items-center gap-3 hover:bg-gray-300/30 transition-all duration-300 font-medium"

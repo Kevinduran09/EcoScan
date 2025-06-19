@@ -8,21 +8,38 @@ interface PreviewViewProps {
     content: string;
     imageUrl?: string; // Nueva prop opcional para la imagen
     setShow: (show: boolean) => void;
+    onSave?: () => Promise<void>;
+    isSaving?: boolean;
 }
 
-export const PreviewView: React.FC<PreviewViewProps> = ({ show, title, content, imageUrl, setShow }) => {
+export const PreviewView: React.FC<PreviewViewProps> = ({ 
+    show, 
+    title, 
+    content, 
+    imageUrl, 
+    setShow, 
+    onSave, 
+    isSaving = false 
+}) => {
     if (!show) return null;
-
 
     const handleClose = () => {
         setShow(false);
     };
+
+    const handleSave = async () => {
+        if (onSave) {
+            await onSave();
+        }
+    };
+
     // Cierra al clicar fondo oscuro
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
             handleClose();
         }
     };
+
     return (
         <div
             role="dialog"
@@ -58,6 +75,7 @@ export const PreviewView: React.FC<PreviewViewProps> = ({ show, title, content, 
                             icon={cameraOutline}
                             variant="info"
                             className="!rounded-lg !px-3 !py-4"
+                            disabled={isSaving}
                         >
                             Volver a tomar
                         </Button>
@@ -67,13 +85,10 @@ export const PreviewView: React.FC<PreviewViewProps> = ({ show, title, content, 
                             fullWidth
                             icon={checkmarkCircle}
                             className="!rounded-lg"
-                            onClick={() => {
-                             
-                                alert('Guardar funcionalidad pendiente');
-                                handleClose();
-                            }}
+                            onClick={handleSave}
+                            disabled={isSaving}
                         >
-                            Guardar
+                            {isSaving ? 'Guardando...' : 'Guardar'}
                         </Button>
                     </div>
                 </div>

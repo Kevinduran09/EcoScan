@@ -49,6 +49,13 @@ const CameraScreen: React.FC = () => {
       stopCamera();
     };
   }, []);
+
+  const uploadToImageDB = async () => {
+    const camaraService = new CameraService()
+    const imageUrl = await camaraService.uploadPhoto(image, userId, response.tipo, "residuo")
+
+    await camaraService.saveRecycleRecord(userId, imageUrl, response.tipo)
+  }
   const handleBack = () => {
     stopCamera()
     history.goBack()
@@ -116,8 +123,6 @@ const CameraScreen: React.FC = () => {
           content: response.consejo || 'Sin resultados',
           imageUrl: base64Image,
         });
-
-
       }
     } catch (error) {
       console.error('Error al tomar la foto: ', error)
@@ -240,7 +245,7 @@ const CameraScreen: React.FC = () => {
 
         </div>        {/* focus square mejorado */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <div className="relative size-64">
+          <div className="squared-camera relative size-64">
             {/* Esquinas */}
             <div className="absolute w-8 h-8 border-t-4 border-l-4 border-green-600 rounded-tl-lg top-0 left-0"></div>
             <div className="absolute w-8 h-8 border-t-4 border-r-4 border-green-600 rounded-tr-lg top-0 right-0"></div>

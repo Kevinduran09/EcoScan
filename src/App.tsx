@@ -54,6 +54,7 @@ const App: React.FC = () => (
         <PrivateRoute path="/" component={TabLayout} />
         <PrivateRoute path="/camera" exact component={CameraScreen} />
 
+
       </IonReactRouter>
     </AuthProvider>
   </IonApp>

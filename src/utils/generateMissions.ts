@@ -1,6 +1,6 @@
-
+import { Mission } from '../types/Mission'
 // tipos de misiones
-const MISSIONS_TYPES = ['material_recycle', 'item_category', 'shared_mission'] as const;
+const MISSIONS_TYPES = ['material_recycle', 'item_category',"count_recycle"] as const;
 
 type MissionType = typeof MISSIONS_TYPES[number];
 
@@ -43,7 +43,7 @@ function getTomorrowISO() {
 }
 
 // Generar mision randomizada
-function generateMission(type: MissionType) {
+function generateMission(type: MissionType): Mission | null {
     const base = {
         id: generateId(),
         type,
@@ -54,48 +54,59 @@ function generateMission(type: MissionType) {
     };
 
     if (type === 'material_recycle') {
-        const material = randomChoice(materials)
-        const target = randomInt(1, 5)
-        const xp = target * randomInt(5, 20) // xp proporcional al target de la mision
+        const material = randomChoice(materials);
+        const target = randomInt(1, 5);
+        const xp = target * randomInt(5, 20); // xp proporcional al target de la mision
 
         return {
             ...base,
+            type: 'material_recycle',
             material,
             target,
             xp
-        }
+        } as Mission;
     }
     if (type === 'item_category') {
         const material = randomChoice(Object.keys(itemCategories)) as MaterialKey;
         const items = itemCategories[material];
-        const item = randomChoice(items)
-        const target = randomInt(1, 4)
-        const xp = target * randomInt(5, 20) // xp proporcional al target de la mision
+        const item = randomChoice(items);
+        const target = randomInt(1, 4);
+        const xp = target * randomInt(5, 20); // xp proporcional al target de la mision
         return {
             ...base,
+            type: 'item_category',
             material,
             item,
             target,
             xp
-        }
+        } as Mission;
     }
-
-    if (type === 'shared_mission') {
-        const target = randomInt(1, 3)
-        const xp = target * randomInt(2, 6)
+    if (type === 'count_recycle'){
+        const target = randomInt(1,8)
+        const xp = target * randomInt(5,20)
         return {
             ...base,
             target,
             xp
-        }
+        } as Mission;
     }
+    // if (type === 'shared_mission') {
+    //     const target = randomInt(1, 3);
+    //     const xp = target * randomInt(2, 6);
+    //     return {
+    //         ...base,
+    //         type: 'shared_mission',
+    //         target,
+    //         xp
+    //     } as Mission;
+    // }
 
-    return null
+    return null;
 }
 
 export function generateMissions(n = 5) {
 
-    const missions = []
+    const missions: Mission[] = []
 
     while (missions.length < n) {
         const mision_type = randomChoice(MISSIONS_TYPES) as MissionType

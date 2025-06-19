@@ -1,8 +1,8 @@
 
 import { User } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp, writeBatch } from "firebase/firestore";
-import { db,storage } from "../core/firebaseConfig";
-import {  ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../core/firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export interface UserProfile {
   id: string;
@@ -49,7 +49,7 @@ export const createOrUpdateUserProfile = async (
     };
   }
 
-  // Si es nuevo usuario, inicializamos todo
+  // Crear datos iniciales del perfil
   const userData: UserProfile = {
     id: user.uid,
     email: user.email || "",
@@ -70,19 +70,19 @@ export const createOrUpdateUserProfile = async (
     location: "Desconocida",
   };
 
-  // Manejar foto persistente
-  if (user.photoURL?.includes("googleusercontent")) {
-    const stableAvatar = await copyGooglePhotoToStorage(user.photoURL, user.uid);
-    userData.avatar = stableAvatar;
-  }
+  // // Manejar foto persistente si viene de Google
+  // if (user.photoURL?.includes("googleusercontent")) {
+  //   const stableAvatar = await copyGooglePhotoToStorage(user.photoURL, user.uid);
+  //   userData.avatar = stableAvatar;
+  // }
 
-  // Usamos batch para inicializar subcolecciones también
+  // Batch para inicializar perfil y subcolecciones
   const batch = writeBatch(db);
 
-  // 1. Crear perfil principal
+  // 1. Perfil principal
   batch.set(userRef, userData);
 
-  // 2. Crear progreso por material (recycleProgress)
+  // 2. Progreso por material
   const progressRef = doc(db, `users/${user.uid}/recycleProgress`, "progress");
   batch.set(progressRef, {
     glass: 0,
@@ -90,10 +90,19 @@ export const createOrUpdateUserProfile = async (
     paper: 0,
     metal: 0,
     organic: 0,
+    cardboard: 0,
   });
 
 
-  // Aplicar batch
+  // 4. Misiones diarias del día actual
+  const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
+  const missionsRef = doc(db, `users/${user.uid}/daily_missions`, today);
+  batch.set(missionsRef, {
+    missions: [],
+    generatedAt: serverTimestamp(),
+  });
+
+  // Commit de batch
   await batch.commit();
 
   return {

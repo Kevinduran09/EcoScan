@@ -20,25 +20,25 @@ import { generateMissions } from '../utils/generateMissions';
 import { MissionCard } from '../components/MissionCard';
 import { StatusBar, Style } from '@capacitor/status-bar';
 const initializeStatusBar = async () => {
-    try {
-        await StatusBar.setStyle({ style: Style.Light });
-        await StatusBar.setBackgroundColor({ color: '#FFD93D' });
-        await StatusBar.show();
-        await StatusBar.setOverlaysWebView({ overlay: false });
-    } catch (error) {
-        console.error('Error al configurar StatusBar:', error);
-    }
+  try {
+    await StatusBar.setStyle({ style: Style.Light });
+    await StatusBar.setBackgroundColor({ color: '#FFD93D' });
+    await StatusBar.show();
+    await StatusBar.setOverlaysWebView({ overlay: false });
+  } catch (error) {
+    console.error('Error al configurar StatusBar:', error);
+  }
 };
 
 // Inicializar StatusBar
-
+initializeStatusBar();
 const ChallengeScreen = () => {
-  initializeStatusBar();
+
   const history = useHistory();
   const handleBack = () => history.goBack();
   const missiones = generateMissions(5)
   console.log(missiones);
-  
+
   const [selectedTab, setSelectedTab] = useState<'daily' | 'weekly'>('daily');
 
   // Simulación de datos
