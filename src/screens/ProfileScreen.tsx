@@ -1,5 +1,5 @@
 import { IonContent, IonPage, IonIcon, IonHeader, IonToolbar } from '@ionic/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { arrowBack, logOutOutline } from 'ionicons/icons';
 import Container from '../components/ui/Container';
 import Title from '../components/ui/Title';
@@ -10,6 +10,9 @@ import Avatar from '../components/Avatar';
 import { signOut } from 'firebase/auth';
 import { auth } from '../core/firebaseConfig';
 import { useAuth } from '../contexts/authContext';
+import { getBadgesByUserId, Badge } from '../services/firebase/BadgesService';
+import BadgeList from '../components/BadgeList';
+
 const initializeStatusBar = async () => {
   try {
     await StatusBar.setStyle({ style: Style.Light });
@@ -19,7 +22,6 @@ const initializeStatusBar = async () => {
   }
 };
 
-
 const ProfileScreen: React.FC = () => {
   initializeStatusBar();
   const history = useHistory();
@@ -28,6 +30,28 @@ const ProfileScreen: React.FC = () => {
   const TOTALEXP = userData?.xp ? userData?.xp / userData?.xpToNextLevel * 100 : 0
   console.log(userData);
   
+  // Estado para insignias
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [loadingBadges, setLoadingBadges] = useState(true);
+  const [errorBadges, setErrorBadges] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchBadges = async () => {
+      if (!user) return;
+      setLoadingBadges(true);
+      try {
+        const userBadges = await getBadgesByUserId(user.uid);
+        setBadges(userBadges);
+        setErrorBadges(null);
+      } catch {
+        setErrorBadges('Error al cargar las insignias');
+      } finally {
+        setLoadingBadges(false);
+      }
+    };
+    fetchBadges();
+  }, [user]);
+
   const handleBack = () => {
     history.goBack();
   }
@@ -85,7 +109,14 @@ const ProfileScreen: React.FC = () => {
               </div>
 
               <ProfileStadistics />
-              {/* <Logout /> */}
+
+              {/* Badges estilo Duolingo */}
+              <BadgeList
+                badges={badges}
+                loading={loadingBadges}
+                error={errorBadges}
+                onViewAll={() => history.push('/badges')}
+              />
             </div>
           </Container>
         </div>

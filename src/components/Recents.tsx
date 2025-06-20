@@ -66,6 +66,9 @@ export const Recents = () => {
         loadRecentItems();
     };
 
+    if (recentItems.length === 0){
+        return 
+    }
     return (
         <div className='space-y-4'>
             <div className='flex flex-row justify-between items-center'>

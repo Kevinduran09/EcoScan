@@ -18,6 +18,9 @@ import { useAuth } from '../contexts/authContext';
 import NivelSubidoModal from '../components/NivelSubidoModal';
 import Button from '../components/ui/Button';
 import { Recents } from '../components/Recents';
+import { useGlobalModal } from '../contexts/GlobalModalContext';
+import celebration from '../animations/celebration.json';
+import jedi from '../animations/jedi_leveluo.json'
 const initializeStatusBar = async () => {
     try {
         await StatusBar.setStyle({ style: Style.Light });
@@ -36,6 +39,7 @@ const HomeScreen: React.FC = () => {
     const [leveUp, setleveUp] = useState(false)
     const [todayItems] = useState([2, 3, 4]);
     const { user, userData } = useAuth();
+    const { openModal } = useGlobalModal();
     const getGreeting = () => {
         const hour = new Date().getHours();
         if (hour < 12) return '¡Buenos días';
@@ -110,10 +114,23 @@ const HomeScreen: React.FC = () => {
                         >
                             Subir nivel
                         </Button>
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => openModal({
+                                title: '¡Nivel subido!',
+                                description: '¡Has alcanzado un nuevo nivel!',
+                                animation: jedi,
+                                sound: '/level-up.mp3',
+                                vibrate: true,
+                                buttonText: '¡Genial!',
+                            })}
+                        >
+                            Probar Modal Global
+                        </Button>
                     </Container>
                 </div>
                 <NivelSubidoModal
-
                     show={leveUp}
                     nivel={1}
                     onClose={() => { setleveUp(false) }}

@@ -5,6 +5,7 @@ import {
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import CameraScreen from './screens/CameraScreen';
+import BadgesScreen from './screens/BadgesScreen';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -34,31 +35,30 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-
 import TabLayout from './screens/TabLayout';
 import LoginScreen from './screens/LoginScreen';
 import { AuthProvider } from './contexts/authContext';
 import PrivateRoute from './components/rutasRedireccion/rutasPrivadas';
+import { GlobalModalProvider } from './contexts/GlobalModalContext';
 setupIonicReact();
 // Configurar 
-
 
 const App: React.FC = () => (
   <IonApp>
     <AuthProvider>
-      <IonReactRouter>
-        {/* Ruta publica */}
-        <Route path="/login" exact render={() => <LoginScreen />} />
+      <GlobalModalProvider>
+        <IonReactRouter>
+          {/* Ruta publica */}
+          <Route path="/login" exact render={() => <LoginScreen />} />
 
-        {/* Rutas protegidas */}
-        <PrivateRoute path="/" component={TabLayout} />
-        <PrivateRoute path="/camera" exact component={CameraScreen} />
-
-
-      </IonReactRouter>
+          {/* Rutas protegidas */}
+          <PrivateRoute path="/" component={TabLayout} />
+          <PrivateRoute path="/camera" exact component={CameraScreen} />
+          <Route path="/badges" component={BadgesScreen} />
+        </IonReactRouter>
+      </GlobalModalProvider>
     </AuthProvider>
   </IonApp>
 );
-
 
 export default App;

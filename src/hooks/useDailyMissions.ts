@@ -66,6 +66,9 @@ export const useDailyMissions = () => {
     };
   }, [missions]);
 
+  const getMissionsByStatus = useCallback((status: string) => {
+    return missions.filter(m => m.estado === status);
+  }, [missions]);
 
   return {
     missions,
@@ -75,5 +78,6 @@ export const useDailyMissions = () => {
     refreshMissions,
     syncWithFirebase,
     getMissionsStats,
+    getMissionsByStatus,
   };
 }; 
