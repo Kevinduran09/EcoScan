@@ -4,10 +4,7 @@ import { generateMissions } from '../utils/generateMissions';
 
 const HistoryScreen: React.FC = () => {
   
-  const missiones = generateMissions(5)
-  
-  console.log(missiones);
-  
+ 
   return (
     <IonPage>
       <IonHeader>

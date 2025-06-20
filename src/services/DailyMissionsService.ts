@@ -113,7 +113,7 @@ export class DailyMissionsService {
       if (!mission) {
         throw new Error('Misión no encontrada');
       }
-      debugger
+      
       // Actualizar en Firebase
       await this.completeMissionInFirebase(userId, missionId);
       
@@ -191,7 +191,7 @@ export class DailyMissionsService {
     missionId: string, 
     increment: number
   ): Promise<void> {
-    debugger
+    
     const today = this.getTodayDateString();
     const missionsRef = doc(db, `users/${userId}/dailyMissions`, today);
     const missionSnap = await getDoc(missionsRef);

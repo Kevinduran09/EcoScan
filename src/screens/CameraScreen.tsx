@@ -93,7 +93,7 @@ const CameraScreen: React.FC = () => {
         response.tipo, 
         "residuo"
       );
-      debugger
+      
       // Guardar registro en Firestore
       await cameraService.saveRecycleRecord(user.uid, imageUrl, response.tipo);
 

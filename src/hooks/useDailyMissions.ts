@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { DailyMissionsService } from '../services/DailyMissionsService';
 import { Mission } from '../types/Mission';
 import { useAuth } from '../contexts/authContext';
@@ -10,7 +10,7 @@ export const useDailyMissions = () => {
   const [error, setError] = useState<string | null>(null);
 
   
-  const loadMissions = useCallback(async () => {
+const loadMissions = async () => {
     if (!user) {
       setLoading(false);
       return;
@@ -29,15 +29,15 @@ export const useDailyMissions = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  };
 
 
-  const refreshMissions = useCallback(async () => {
+  const refreshMissions = async () => {
     await loadMissions();
-  }, [loadMissions]);
+  };
 
   // Sincronizar con Firebase
-  const syncWithFirebase = useCallback(async () => {
+  const syncWithFirebase = async () => {
     if (!user) return;
 
     try {
@@ -46,13 +46,13 @@ export const useDailyMissions = () => {
     } catch (err) {
       console.warn('⚠️ Error sincronizando con Firebase:', err);
     }
-  }, [user, loadMissions]);
+  };
 
   useEffect(() => {
     loadMissions();
-  }, [loadMissions]);
+  }, []);
 
-  const getMissionsStats = useCallback(() => {
+  const getMissionsStats = () => {
     const total = missions.length;
     const completed = missions.filter(m => m.estado === 'completada').length;
     const pending = total - completed;
@@ -64,11 +64,11 @@ export const useDailyMissions = () => {
       pending,
       progressPercentage
     };
-  }, [missions]);
+  };
 
-  const getMissionsByStatus = useCallback((status: string) => {
+  const getMissionsByStatus = (status: string) => {
     return missions.filter(m => m.estado === status);
-  }, [missions]);
+  };
 
   return {
     missions,

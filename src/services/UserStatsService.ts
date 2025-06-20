@@ -95,8 +95,8 @@ export class UserStatsService {
         await this.incrementRecycledCount(userId);
       }
 
-      // Actualizar racha de misiones diarias
-      await this.updateMissionStreak(userId);
+      // // Actualizar racha de misiones diarias
+      // await this.updateMissionStreak(userId);
 
       console.log(`✅ Misión completada: +${mission.xp} XP`);
       
