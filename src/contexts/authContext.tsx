@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsNewUser(isNew);
           setUserData(userData);
           setUser(firebaseUser);
-
+          
           
           await initializeDailyMissions(firebaseUser.uid);
         } else {

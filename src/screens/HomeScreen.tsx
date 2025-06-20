@@ -46,7 +46,7 @@ const HomeScreen: React.FC = () => {
         if (hour < 18) return '¡Buenas tardes';
         return '¡Buenas noches';
     };
-
+    
     const getMotivationalMessage = () => {
         if (todayItems.length === 0) {
             return '¡Comienza tu día reciclando algo! 🌱';
