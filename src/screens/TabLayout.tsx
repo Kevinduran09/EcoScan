@@ -7,6 +7,7 @@ import HomeScreen from './HomeScreen'
 import MapScreen from './MapScreen'
 import ChallengeScreen  from './ChallengeScreen'
 import HistoryScreen from './HistoryScreen'
+import RankingScreen from './rankingScreen'
 import ProfileScreen from './ProfileScreen'
 import { StatusBar, Style } from '@capacitor/status-bar'
 const initializeStatusBar = async () => {
@@ -38,6 +39,9 @@ const TabLayout = () => {
                 </Route>
                 <Route exact path="/history">
                     <HistoryScreen />
+                </Route>
+                <Route exact path="/ranking">
+                    <RankingScreen />
                 </Route>
                 <Route exact path="/profile">
                     <ProfileScreen />
