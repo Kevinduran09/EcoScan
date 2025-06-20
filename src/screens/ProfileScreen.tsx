@@ -92,18 +92,25 @@ const ProfileScreen: React.FC = () => {
               <Avatar url={userData?.avatar}  size={120} />
 
               {/* Nombre y título */}
-              <h2 className='!text-3xl text-white font-bold'>{user?.displayName}</h2>
+              <h2 className='!text-3xl text-white font-bold'>{userData?.displayName}</h2>
 
-              <span className="effect-shimmer relative overflow-hidden bg-green-600/80 text-white text-sm px-4 py-1 rounded-full font-semibold mt-1 mb-2 shadow"> {userData?.bio} </span>
-              <p className="text-white/80 mb-2">Nivel {userData?.level}</p>
+              <span className="effect-shimmer relative overflow-hidden bg-green-600/80 text-white text-sm px-4 py-1 rounded-full font-semibold mt-1 mb-2 shadow"> {userData?.title} </span>
+
+              <p className='text-zinc-200 text-lg py-3'>
+                {userData?.bio}
+              </p>
+          
 
 
 
               {/* Barra de progreso */}
               <div className='w-full px-2'>
-                <p className="text-white text-xl mb-3">Progreso del nivel</p>
+                <div className='flex justify-between'>
+                  <p className="text-white text-xl mb-3">Progreso del nivel</p>
+                  <span className="text-white/80 mb-2">Nivel {userData?.level}</span>
+                </div>
                 <div className="w-full bg-white/30 rounded-full h-4 mb-4 shadow-inner">
-                  <div className="bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full transition-all duration-500" style={{ width: `${TOTALEXP}%` }}></div>
+                  <div className="effect-shimmer relative overflow-hidden bg-gradient-to-r from-green-400 to-green-600 h-4 rounded-full transition-all duration-500" style={{ width: `${TOTALEXP}%` }}></div>
                 </div>
                 <p className="text-white text-md mb-4">{userData?.xp} XP / {userData?.xpToNextLevel} XP para el siguiente nivel</p>
               </div>

@@ -4,9 +4,9 @@ import { IonIcon, IonLoading } from "@ionic/react"
 import { eye, eyeOff } from "ionicons/icons"
 import { useState } from "react"
 import { createUserWithEmailAndPassword } from "firebase/auth"
-import { doc, setDoc } from "firebase/firestore"
-import { auth, db } from "../core/firebaseConfig"
+import { auth } from "../core/firebaseConfig"
 import { useHistory } from "react-router-dom"
+import { useAuth } from "../contexts/authContext"
 
 const RegisterForm = () => {
   const [email, setEmail] = useState("")
@@ -16,6 +16,7 @@ const RegisterForm = () => {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const history = useHistory()
+  const { setRegistrationData } = useAuth()
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible)
@@ -38,13 +39,19 @@ const RegisterForm = () => {
 
     try {
       setLoading(true)
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-
-
+      
+      // Establecer los datos de registro en el contexto antes de crear el usuario
+      setRegistrationData({ displayName: name })
+      
+      // Crear el usuario
+      await createUserWithEmailAndPassword(auth, email, password)
+      
+      // El authContext se encargará de crear el perfil con los datos correctos
       history.push("/home")
-    } catch (err: any) {
-      setError(err.message)
-      console.error(err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      setError(errorMessage)
+      console.error(errorMessage)
     }
 
     setLoading(false)

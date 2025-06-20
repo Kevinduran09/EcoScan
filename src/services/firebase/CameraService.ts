@@ -108,7 +108,7 @@ export class CameraService {
                     shouldUpdate = true;
                     newProgress = Math.min(mission.progresoActual + 1, mission.target);
                 }
-                
+                debugger
                 // Si la misión se completó, marcarla como completada
                 if (shouldUpdate && newProgress >= mission.target && mission.estado !== 'completada') {
                     await DailyMissionsService.completeMission(userId, mission.id);

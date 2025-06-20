@@ -20,6 +20,8 @@ import { collection, getDocs, query, orderBy, limit } from "firebase/firestore"
 import { db } from "../core/firebaseConfig"
 import { trophy, medal, ribbon } from "ionicons/icons"
 import { useAuth } from "../contexts/authContext"
+import Title from "../components/ui/Title"
+import LinearGradient from "../components/ui/LinearGradiant"
 interface RankingUser {
   id: string
   displayName: string
@@ -100,80 +102,85 @@ const RankingScreen: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="success">
-          <IonTitle>🏆 Ranking</IonTitle>
+        <IonToolbar color="success" className="p-3 text-center text-white ">
+          <Title >🏆 Ranking</Title>
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent></IonRefresherContent>
-        </IonRefresher>
+       <LinearGradient
+          colors={['#4caf50','#8bc34a']}
+          direction="to bottom"
+       >
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent></IonRefresherContent>
+          </IonRefresher>
 
-        {loading ? (
-          <div className="ion-text-center ion-padding" style={{ marginTop: "50%" }}>
-            <IonSpinner name="crescent" />
-            <p>Cargando ranking...</p>
-          </div>
-        ) : (
-          <IonList>
-            {ranking.length === 0 ? (
-              <IonItem>
-                <IonLabel>
-                  <h2>No hay usuarios con puntos aún</h2>
-                  <p>¡Sé el primero en aparecer en el ranking!</p>
-                </IonLabel>
-              </IonItem>
-            ) : (
-              ranking.map((rankUser, index) => {
-                const position = index + 1
-                const isCurrentUser = rankUser.id === user?.uid
-                const rankIcon = getRankIcon(position)
+          {loading ? (
+            <div className="ion-text-center ion-padding" style={{ marginTop: "50%" }}>
+              <IonSpinner name="crescent" />
+              <p>Cargando ranking...</p>
+            </div>
+          ) : (
+            <IonList className="space-y-3">
+              {ranking.length === 0 ? (
+                <IonItem>
+                  <IonLabel>
+                    <h2>No hay usuarios con puntos aún</h2>
+                    <p>¡Sé el primero en aparecer en el ranking!</p>
+                  </IonLabel>
+                </IonItem>
+              ) : (
+                ranking.map((rankUser, index) => {
+                  const position = index + 1
+                  const isCurrentUser = rankUser.id === user?.uid
+                  const rankIcon = getRankIcon(position)
 
-                return (
-                  <IonItem key={rankUser.id} color={isCurrentUser ? "light" : undefined}>
-                    <div slot="start" className="ion-text-center" style={{ minWidth: "40px" }}>
-                      {rankIcon ? (
-                        <IonIcon icon={rankIcon} color={getRankColor(position)} size="large" />
-                      ) : (
-                        <IonText color="medium">
-                          <strong>#{position}</strong>
-                        </IonText>
-                      )}
-                    </div>
+                  return (
+                    <IonItem className="shadow-lg rounded-xl m-2"  key={rankUser.id} color={isCurrentUser ? "light" : undefined}>
+                      <div slot="start" className="ion-text-center" style={{ minWidth: "40px" }}>
+                        {rankIcon ? (
+                          <IonIcon icon={rankIcon} color={getRankColor(position)} size="large" />
+                        ) : (
+                          <IonText color="medium">
+                            <strong>#{position}</strong>
+                          </IonText>
+                        )}
+                      </div>
 
-                    <IonLabel>
-                      <h2>
-                        <strong>
-                          {rankUser.displayName || "Usuario anónimo"}
-                          {isCurrentUser && (
-                            <IonBadge color="success" style={{ marginLeft: "8px" }}>
-                              Tú
-                            </IonBadge>
-                          )}
-                        </strong>
-                      </h2>
-                      <p>
-                        Nivel {rankUser.level} • {rankUser.xp || 0} XP
-                      </p>
-                    </IonLabel>
-
-                    <div slot="end" className="ion-text-end">
-                      <IonText color="primary">
+                      <IonLabel>
                         <h2>
-                          <strong>{formatPoints(rankUser.totalPoints)}</strong>
+                          <strong>
+                            {rankUser.displayName || "Usuario anónimo"}
+                            {isCurrentUser && (
+                              <IonBadge color="success" style={{ marginLeft: "8px" }}>
+                                Tú
+                              </IonBadge>
+                            )}
+                          </strong>
                         </h2>
-                      </IonText>
-                      <IonText color="medium">
-                        <p>puntos</p>
-                      </IonText>
-                    </div>
-                  </IonItem>
-                )
-              })
-            )}
-          </IonList>
-        )}
+                        <p>
+                          Nivel {rankUser.level} • {rankUser.xp || 0} XP
+                        </p>
+                      </IonLabel>
+
+                      <div slot="end" className="ion-text-end">
+                        <IonText color="primary">
+                          <h2>
+                            <strong>{formatPoints(rankUser.totalPoints)}</strong>
+                          </h2>
+                        </IonText>
+                        <IonText color="medium">
+                          <p>puntos</p>
+                        </IonText>
+                      </div>
+                    </IonItem>
+                  )
+                })
+              )}
+            </IonList>
+          )}
+       </LinearGradient>
       </IonContent>
     </IonPage>
   )

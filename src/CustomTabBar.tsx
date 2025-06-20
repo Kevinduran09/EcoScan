@@ -1,6 +1,6 @@
 import React from 'react'
 import { IonTabButton, IonIcon, IonLabel, IonTabBar } from '@ionic/react'
-import { homeOutline, cameraOutline, timeOutline, personOutline, home, camera, time, person, ribbon, ribbonOutline } from 'ionicons/icons'
+import { homeOutline, cameraOutline, timeOutline, personOutline, home, camera, time, person, ribbon, ribbonOutline, earth, earthOutline } from 'ionicons/icons'
 import { useLocation } from 'react-router-dom';
 
 const TAB_ROUTES = ['/home', '/map', '/ranking', '/profile',"/challenge"];
@@ -44,9 +44,9 @@ export const CustomTabBar = () => {
             </IonTabButton>
             <IonTabButton tab="ranking" href="/ranking">
                 <IonIcon aria-hidden="true"
-                    icon={location.pathname === '/ranking' ? time : timeOutline}
+                    icon={location.pathname === '/ranking' ? earth : earthOutline}
                 />
-                <IonLabel>Historial</IonLabel>
+                <IonLabel>Ranking</IonLabel>
             </IonTabButton>
             <IonTabButton tab="profile" href="/profile">
                 <IonIcon aria-hidden="true"

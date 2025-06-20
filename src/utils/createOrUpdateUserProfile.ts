@@ -1,6 +1,5 @@
-
 import { User } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, writeBatch } from "firebase/firestore";
 import { db, storage } from "../core/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -9,6 +8,7 @@ export interface UserProfile {
   email: string;
   displayName: string;
   avatar: string;
+  title:string
   bio: string;
   level: number;
   totalPoints: number;
@@ -18,13 +18,11 @@ export interface UserProfile {
   dailyMissionStreak: number;
   achievements: string[];
   medals: string[];
-  joinedAt: any;
+  joinedAt: unknown;
   isOnline: boolean;
-  lastSeen: any;
+  lastSeen: unknown;
   location: string;
 }
-
-
 
 export const copyGooglePhotoToStorage = async (photoURL: string, uid: string) => {
   const corsProxy = "https://corsproxy.io/?";
@@ -37,25 +35,27 @@ export const copyGooglePhotoToStorage = async (photoURL: string, uid: string) =>
 };
 
 export const createOrUpdateUserProfile = async (
-  user: User
+  user: User,
+  registrationData?: { displayName?: string }
 ): Promise<{ isNew: boolean; userData: UserProfile }> => {
   const userRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userRef);
 
-  if (userSnap.exists()) {
+  if (userSnap.exists() && userSnap.data().id) {
     return {
       isNew: false,
       userData: userSnap.data() as UserProfile,
     };
   }
-
+  debugger
   // Crear datos iniciales del perfil
   const userData: UserProfile = {
     id: user.uid,
     email: user.email || "",
-    displayName: user.displayName || "",
+    displayName: registrationData?.displayName || user.displayName || "Anonimo",
     avatar: user.photoURL || "👤",
-    bio: "Nuevo usuario 🌱",
+    title: "Jacinto Basurilla 🪖",
+    bio:'Has iniciado tu camino ecológico',
     level: 1,
     xp: 0,
     xpToNextLevel: 100,
@@ -92,7 +92,6 @@ export const createOrUpdateUserProfile = async (
     organic: 0,
     cardboard: 0,
   });
-
 
   // 4. Misiones diarias del día actual
   const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'

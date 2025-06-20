@@ -193,12 +193,14 @@ const ChallengeScreen = () => {
             )}
           </LinearGradient>
         ) : (
-          <div className="p-4">
-            <Text>Misiones completadas esta semana</Text>
+          <LinearGradient colors={['#FF6B6B', '#FFD93D']} direction="to bottom" className="p-4 space-y-4 ">
+            <Text size='2xl' weight='semibold'>Misiones completadas esta semana</Text>
+
             {completedMissions.length > 0 ? (
               completedMissions.map((mission) => (
                 <MissionCard mission={mission} key={mission.id} />
               ))
+
             ) : (
               <Card className='space-y-4 text-center py-8 mt-4'>
                 <Text size='lg' weight='bold' color="gray">
@@ -209,7 +211,8 @@ const ChallengeScreen = () => {
                 </Text>
               </Card>
             )}
-          </div>
+          </LinearGradient>
+
         )}
       </IonContent>
     </IonPage>

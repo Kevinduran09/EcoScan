@@ -38,7 +38,7 @@ const HomeScreen: React.FC = () => {
     const { achievements } = data.data;
     const [leveUp, setleveUp] = useState(false)
     const [todayItems] = useState([2, 3, 4]);
-    const { user, userData } = useAuth();
+    const {  userData } = useAuth();
     const { openModal } = useGlobalModal();
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -66,7 +66,7 @@ const HomeScreen: React.FC = () => {
                         <div className='flex justify-between items-center mb-5'>
                             <div className='space-y-1'>
                                 <Title variant="h2" color="white">
-                                    {getGreeting()},  {user?.displayName?.split(' ')[0]}!
+                                    {getGreeting()},  {userData?.displayName?.split(' ')[0]}!
                                 </Title>
                                 <Text size="base" color="white">
                                     Reciclador Nivel {userData?.level}
