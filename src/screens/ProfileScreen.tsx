@@ -19,22 +19,13 @@ const initializeStatusBar = async () => {
   }
 };
 
-// Inicializar StatusBar
-
-
-// Datos de ejemplo del usuario (puedes reemplazar por datos reales)
-// const user = {
-//   nombre: 'Kevin López',
-//   imagen: 'https://randomuser.me/api/portraits/men/32.jpg', // Cambia por la URL real o avatar local
-//   titulo: 'Reciclador Novato',
-//   nivel: 1,
-// };
 
 const ProfileScreen: React.FC = () => {
   initializeStatusBar();
   const history = useHistory();
   const {user,userData} = useAuth()
-  const TOTALEXP = userData?.xp
+  
+  const TOTALEXP = userData?.xp ? userData?.xp / userData?.xpToNextLevel * 100 : 0
   console.log(userData);
   
   const handleBack = () => {

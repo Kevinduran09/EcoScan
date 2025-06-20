@@ -40,15 +40,6 @@ const RegisterForm = () => {
       setLoading(true)
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
 
-      const user = userCredential.user
-
-      // Guardar en Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        nombre: name,
-        email: user.email,
-        creado: new Date(),
-      })
 
       history.push("/home")
     } catch (err: any) {

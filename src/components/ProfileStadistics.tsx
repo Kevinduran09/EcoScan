@@ -3,33 +3,39 @@ import Title from './ui/Title'
 import { leaf, flame, trophy, star } from 'ionicons/icons'
 import Card from './Card'
 import { IonIcon } from '@ionic/react'
-const estadisticas = [
-    {
-        icon: leaf,
-        title: 'Objetos Reciclados',
-        value: 12,
-        color: '#0d8e0b'
-    },
-    {
-        icon: flame,
-        title: 'Racha Actual',
-        value: 5,
-        color: '#FF6B35'
-    },
-    {
-        icon: trophy,
-        title: 'Mejor Racha',
-        value: 8,
-        color: '#fdd700'
-    },
-    {
-        icon: star,
-        title: 'Logros',
-        value: 3,
-        color: '#a113ad'
-    }
-]
+import { useAuth } from '../contexts/authContext'
+
 const ProfileStadistics = () => {
+    const { userData } = useAuth()
+
+
+    const estadisticas = [
+        {
+            icon: leaf,
+            title: 'Objetos Reciclados',
+            value: userData?.totalRecycled,
+            color: '#0d8e0b'
+        },
+        {
+            icon: flame,
+            title: 'Racha Actual',
+            value: userData?.dailyMissionStreak,
+            color: '#FF6B35'
+        },
+        {
+            icon: trophy,
+            title: 'Mejor Racha',
+            value: 0,
+            color: '#fdd700'
+        },
+        {
+            icon: star,
+            title: 'Logros',
+            value: userData?.achievements.length,
+            color: '#a113ad'
+        }
+    ]
+
     return (
         <div className='w-full'>
             <Title variant='h2' color='white' className="">Estadísticas</Title>

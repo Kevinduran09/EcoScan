@@ -14,6 +14,8 @@ import { PreviewView } from '../components/PreviewView';
 import { useAuth } from '../contexts/authContext';
 import { LocalStorageService } from '../services/LocalStorageService';
 import { SuccessModal } from '../components/SuccessModal';
+import { MissionNotification } from '../components/MissionNotification';
+import { useMissionNotifications } from '../hooks/useMissionNotifications';
 
 const initializeStatusBar = async () => {
   try {
@@ -56,6 +58,13 @@ const CameraScreen: React.FC = () => {
   const isNative = Capacitor.isNativePlatform()
   const [image, setImage] = useState<string | null>(null);
 
+  const {
+    showNotification,
+    notificationData,
+    checkAndShowAchievements,
+    dismissNotification
+  } = useMissionNotifications();
+
   useEffect(() => {
     console.log('montando cámara...');
     startCamera();
@@ -84,9 +93,12 @@ const CameraScreen: React.FC = () => {
         response.tipo, 
         "residuo"
       );
-
+      debugger
       // Guardar registro en Firestore
       await cameraService.saveRecycleRecord(user.uid, imageUrl, response.tipo);
+
+      // Verificar si se completó alguna misión y mostrar notificación
+      await checkAndShowAchievements(user.uid);
 
       return imageUrl;
     } catch (error) {
@@ -298,6 +310,17 @@ const CameraScreen: React.FC = () => {
             setShowSuccessModal(false);
             // Aquí podrías agregar lógica adicional para continuar escaneando
           }}
+        />
+
+        {/* Notificación de misiones */}
+        <MissionNotification
+          isOpen={showNotification}
+          onDidDismiss={dismissNotification}
+          type={notificationData.type}
+          message={notificationData.message}
+          xp={notificationData.xp}
+          level={notificationData.level}
+          achievement={notificationData.achievement}
         />
 
         {/* Toast de error */}

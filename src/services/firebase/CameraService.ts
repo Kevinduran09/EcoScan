@@ -5,6 +5,7 @@ import { extractJSONFromResponse } from "../../utils/helpers";
 import { ReponseInterface } from "../../types/responseTypes";
 import { addDoc, collection, doc, increment, serverTimestamp, setDoc } from "firebase/firestore";
 import { invalidateRecyclingCache } from "./RecyclingCacheService";
+import { DailyMissionsService } from "../DailyMissionsService";
 
 export class CameraService {
 
@@ -23,7 +24,16 @@ export class CameraService {
             [tipo]: increment(1)
         }, { merge: true });
 
-        // 3. Invalidar caché para que se actualice la lista de reciclajes recientes
+        // avtualizar contador total
+        const userRef = doc(db,`users/${userId}`);
+        await setDoc(userRef,{
+          ["totalRecycled"]:increment(1)  
+        },{merge:true})
+
+        // 3. Actualizar progreso de misiones diarias
+        await this.updateMissionsProgress(userId, tipo);
+
+        // 4. Invalidar caché para que se actualice la lista de reciclajes recientes
         await invalidateRecyclingCache();
     }
 
@@ -38,6 +48,7 @@ export class CameraService {
         await uploadBytes(storageRef, blob);
         return await getDownloadURL(storageRef); // URL pública y estable
     }
+
     async analyzeImageWithIA(base64Image: string): Promise<ReponseInterface> {
 
         const base64Data = base64Image.split(',')[1];
@@ -71,5 +82,45 @@ export class CameraService {
             throw new Error("El modelo no devolvió JSON válido.");
         }
 
+    }
+
+    /**
+     * Actualiza el progreso de las misiones diarias basado en el tipo de residuo reciclado
+     */
+    private async updateMissionsProgress(userId: string, tipo: string): Promise<void> {
+        try {
+            // Obtener misiones actuales
+            const missions = await DailyMissionsService.getTodayMissions(userId);
+            
+            // Actualizar progreso para misiones relevantes
+            for (const mission of missions) {
+                let shouldUpdate = false;
+                let newProgress = mission.progresoActual;
+
+                // Verificar si la misión coincide con el tipo reciclado
+                if (mission.type === 'material_recycle' && mission.material === tipo) {
+                    shouldUpdate = true;
+                    newProgress = Math.min(mission.progresoActual + 1, mission.target);
+                } else if (mission.type === 'count_recycle') {
+                    shouldUpdate = true;
+                    newProgress = Math.min(mission.progresoActual + 1, mission.target);
+                } else if (mission.type === 'item_category' && mission.material === tipo) {
+                    shouldUpdate = true;
+                    newProgress = Math.min(mission.progresoActual + 1, mission.target);
+                }
+                debugger
+                // Si la misión se completó, marcarla como completada
+                if (shouldUpdate && newProgress >= mission.target && mission.estado !== 'completada') {
+                    await DailyMissionsService.completeMission(userId, mission.id);
+                    console.log(`🎉 Misión completada: ${mission.id} - ${mission.type}`);
+                } else if (shouldUpdate && newProgress !== mission.progresoActual) {
+                    
+                    await DailyMissionsService.updateMissionProgressOnlyInFirebase(userId, mission.id, newProgress);
+                    console.log(`📈 Progreso actualizado para misión: ${mission.id} (${newProgress}/${mission.target})`);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Error actualizando progreso de misiones:', error);
+        }
     }
 }

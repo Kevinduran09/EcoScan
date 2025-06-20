@@ -121,3 +121,9 @@ Tipos:
 3. Crear Pull Request hacia `develop`
 4. Esperar revisión de código
 
+## TODO
+
+- [ ] Agregar push notification con server que notifique todos los días a todos los usuarios que hay que reciclar
+- [ ] Estadísticas Comunitarias: Visualización (anonimizada) del impacto colectivo (ej: total reciclado por la comunidad)
+- [ ] Gamificación (Logros/Insignias): Sistema de badges desbloqueables por hitos de reciclaje
+

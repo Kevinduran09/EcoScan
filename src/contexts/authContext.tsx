@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth, authReady } from "../core/firebaseConfig";
 import { createOrUpdateUserProfile, UserProfile } from "../utils/createOrUpdateUserProfile";
+import { DailyMissionsService } from "../services/DailyMissionsService";
 
 interface AuthContextProps {
   user: User | null;
@@ -18,6 +19,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
+
+
+  const initializeDailyMissions = async (userId: string) => {
+    try {
+      console.log('🚀 Inicializando misiones diarias...');
+      await DailyMissionsService.getTodayMissions(userId);
+      console.log('✅ Misiones diarias inicializadas correctamente');
+    } catch (error) {
+      console.error('❌ Error inicializando misiones diarias:', error);
+    }
+  };
+
+
+  const cleanOldData = () => {
+    try {
+      DailyMissionsService.cleanOldLocalData();
+    } catch (error) {
+      console.warn('⚠️ Error limpiando datos antiguos:', error);
+    }
+  };
+
   useEffect(() => {
     authReady.then(() => {
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -26,6 +48,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsNewUser(isNew);
           setUserData(userData);
           setUser(firebaseUser);
+
+          
+          await initializeDailyMissions(firebaseUser.uid);
         } else {
           setUser(null);
           setIsNewUser(false);
@@ -35,6 +60,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return () => unsubscribe();
     });
+
+    // Limpiar datos antiguos al iniciar la app
+    cleanOldData();
   }, []);
 
   return (
