@@ -3,7 +3,7 @@ import { IonTabButton, IonIcon, IonLabel, IonTabBar } from '@ionic/react'
 import { homeOutline, cameraOutline, timeOutline, personOutline, home, camera, time, person, ribbon, ribbonOutline } from 'ionicons/icons'
 import { useLocation } from 'react-router-dom';
 
-const TAB_ROUTES = ['/home', '/map', '/history', '/profile',"/challenge"];
+const TAB_ROUTES = ['/home', '/map', '/ranking', '/profile',"/challenge"];
 
 export const CustomTabBar = () => {
     const location = useLocation();
@@ -42,9 +42,9 @@ export const CustomTabBar = () => {
                 </div>
                 {/* <IonLabel className="text-white text-xs font-bold">Cámara</IonLabel> */}
             </IonTabButton>
-            <IonTabButton tab="history" href="/history">
+            <IonTabButton tab="ranking" href="/ranking">
                 <IonIcon aria-hidden="true"
-                    icon={location.pathname === '/history' ? time : timeOutline}
+                    icon={location.pathname === '/ranking' ? time : timeOutline}
                 />
                 <IonLabel>Historial</IonLabel>
             </IonTabButton>

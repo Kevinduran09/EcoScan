@@ -10,6 +10,7 @@ const HistoryScreen: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Historial</IonTitle>
+          
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
