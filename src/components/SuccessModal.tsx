@@ -1,120 +1,119 @@
-import React, { useEffect, useState } from 'react';
-import { checkmarkCircle, trophy } from 'ionicons/icons';
+import React from 'react';
 import { IonIcon } from '@ionic/react';
+import { checkmarkCircle, trophy, leaf } from 'ionicons/icons';
+import Card from './Card';
+import Button from './ui/Button';
 
 interface SuccessModalProps {
   show: boolean;
   onClose: () => void;
   tipo: string;
+  onContinue?: () => void;
 }
 
-export const SuccessModal: React.FC<SuccessModalProps> = ({ show, onClose, tipo }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  useEffect(() => {
-    if (show) {
-      setIsVisible(true);
-      setShowConfetti(true);
-      
-      // Reproducir sonido de éxito (opcional)
-      // playSuccessSound();
-      
-      // Auto-cerrar después de 3 segundos
-      const timer = setTimeout(() => {
-        handleClose();
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [show]);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    setShowConfetti(false);
-    setTimeout(() => {
-      onClose();
-    }, 300);
-  };
-
+export const SuccessModal: React.FC<SuccessModalProps> = ({
+  show,
+  onClose,
+  tipo,
+  onContinue
+}) => {
   if (!show) return null;
 
-  return (
-    <div
-      className={`fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4 transition-opacity duration-300 ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      onClick={handleClose}
-    >
-      {/* Confetti effect */}
-      {showConfetti && (
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-2 h-2 bg-gradient-to-r from-green-400 to-blue-500 rounded-full animate-bounce`}
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${1 + Math.random() * 2}s`,
-              }}
-            />
-          ))}
-        </div>
-      )}
+  const getCategoryIcon = (tipo: string) => {
+    const icons: Record<string, string> = {
+      'carton': '📦',
+      'papel': '📄',
+      'vidrio': '🍶',
+      'aluminio': '🥫',
+      'plastico': '🥤',
+      'organico': '🍎',
+      'electronicos': '📱'
+    };
+    return icons[tipo] || '♻️';
+  };
 
-      <div 
-        className={`w-[90%] max-w-sm rounded-2xl bg-white shadow-2xl transform transition-all duration-300 ${
-          isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
-        }`}
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
-      >
-        <div className="text-center p-8 space-y-6">
-          {/* Icono animado */}
-          <div className="relative">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center animate-pulse">
-              <IonIcon 
-                icon={checkmarkCircle} 
-                className="text-white text-4xl animate-bounce"
-              />
-            </div>
-            <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-spin">
-              <IonIcon icon={trophy} className="text-white text-sm" />
+  const getMotivationalMessage = (tipo: string) => {
+    const messages: Record<string, string> = {
+      'carton': '¡Excelente! El cartón se puede reciclar hasta 7 veces.',
+      'papel': '¡Perfecto! El papel reciclado ahorra mucha agua y energía.',
+      'vidrio': '¡Genial! El vidrio es 100% reciclable infinitamente.',
+      'aluminio': '¡Fantástico! El aluminio se puede reciclar sin perder calidad.',
+      'plastico': '¡Bien hecho! Cada botella reciclada ahorra energía.',
+      'organico': '¡Excelente! Los residuos orgánicos se convierten en compost.',
+      'electronicos': '¡Perfecto! Los electrónicos contienen materiales valiosos.'
+    };
+    return messages[tipo] || '¡Gracias por reciclar! Cada acción cuenta.';
+  };
+
+  const handleContinue = () => {
+    if (onContinue) {
+      onContinue();
+    }
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-3">
+      <Card className="w-[90%] max-w-md rounded-xl bg-white shadow-lg px-6 py-8 relative">
+        <div className="space-y-6 text-center">
+          {/* Icono de éxito */}
+          <div className="flex justify-center">
+            <div className="bg-green-100 rounded-full p-4">
+              <IonIcon icon={checkmarkCircle} className="size-16 text-green-600" />
             </div>
           </div>
 
           {/* Título */}
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-gray-800">
-              ¡Excelente trabajo! 🌱
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              ¡Guardado exitosamente! 🎉
             </h2>
-            <p className="text-gray-600">
-              Has reciclado correctamente
-            </p>
-            <div className="inline-block bg-gradient-to-r from-green-100 to-blue-100 px-4 py-2 rounded-full">
-              <span className="font-semibold text-green-700 capitalize">
-                {tipo}
-              </span>
+            <div className="flex items-center justify-center gap-2 text-lg text-gray-600">
+              <span>{getCategoryIcon(tipo)}</span>
+              <span className="capitalize font-medium">{tipo}</span>
             </div>
           </div>
 
           {/* Mensaje motivacional */}
-          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-700">
-              Cada pequeño acto de reciclaje cuenta para un futuro más sostenible. ¡Sigue así!
+          <div className="bg-green-50 rounded-lg p-4">
+            <p className="text-sm text-green-800">
+              {getMotivationalMessage(tipo)}
             </p>
           </div>
 
-          {/* Botón de cerrar */}
-          <button
-            onClick={handleClose}
-            className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
-          >
-            ¡Continuar!
-          </button>
+          {/* Estadísticas rápidas */}
+          <div className="flex justify-center gap-4 text-xs text-gray-500">
+            <div className="flex items-center gap-1">
+              <IonIcon icon={leaf} className="size-4 text-green-600" />
+              <span>Planeta más limpio</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <IonIcon icon={trophy} className="size-4 text-yellow-600" />
+              <span>+10 XP</span>
+            </div>
+          </div>
+
+          {/* Botones */}
+          <div className="flex flex-col gap-3">
+            <Button
+              variant="primary"
+              fullWidth
+              onClick={handleContinue}
+              className="!rounded-lg !py-3"
+            >
+              Continuar escaneando
+            </Button>
+            <Button
+              variant="info"
+              fullWidth
+              onClick={onClose}
+              className="!rounded-lg !py-3"
+            >
+              Ver historial
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }; 

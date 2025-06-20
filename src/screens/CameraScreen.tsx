@@ -1,4 +1,4 @@
-import { IonContent, IonPage, IonButton, IonIcon } from '@ionic/react';
+import { IonContent, IonPage, IonButton, IonIcon, IonToast } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { CameraPreview, CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-community/camera-preview';
@@ -11,6 +11,10 @@ import Title from '../components/ui/Title';
 import { CameraService } from '../services/firebase/CameraService';
 import { ReponseInterface } from '../types/responseTypes';
 import { PreviewView } from '../components/PreviewView';
+import { useAuth } from '../contexts/authContext';
+import { LocalStorageService } from '../services/LocalStorageService';
+import { SuccessModal } from '../components/SuccessModal';
+
 const initializeStatusBar = async () => {
   try {
     await StatusBar.setStyle({ style: Style.Light });
@@ -20,16 +24,21 @@ const initializeStatusBar = async () => {
     console.error('Error al configurar StatusBar:', error);
   }
 };
+
 interface PreviewData {
   show: boolean;
   title: string;
   content: string;
   imageUrl: string | null;
+  response?: ReponseInterface;
 }
+
 // Inicializar StatusBar
 initializeStatusBar();
+
 const CameraScreen: React.FC = () => {
   const history = useHistory()
+  const { user } = useAuth()
   const [previewData, setPreviewData] = useState<PreviewData>({
     show: false,
     title: '',
@@ -39,8 +48,14 @@ const CameraScreen: React.FC = () => {
   const [isCamaraActive, setIsCamaraActive] = useState(false)
   const [isFlashOn, setIsFlashOn] = useState(false)
   const [isFrontCamera, setIsFrontCamera] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [successTipo, setSuccessTipo] = useState('')
+  const [showErrorToast, setShowErrorToast] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const isNative = Capacitor.isNativePlatform()
   const [image, setImage] = useState<string | null>(null);
+
   useEffect(() => {
     console.log('montando cámara...');
     startCamera();
@@ -50,16 +65,91 @@ const CameraScreen: React.FC = () => {
     };
   }, []);
 
-  const uploadToImageDB = async () => {
-    const camaraService = new CameraService()
-    const imageUrl = await camaraService.uploadPhoto(image, userId, response.tipo, "residuo")
+  const saveImageToFirebase = async (base64Image: string, response: ReponseInterface) => {
+    if (!user) {
+      throw new Error('Usuario no autenticado');
+    }
 
-    await camaraService.saveRecycleRecord(userId, imageUrl, response.tipo)
-  }
+    if (response.success !== 200 || response.tipo === 'error') {
+      throw new Error('No se puede guardar un resultado inválido');
+    }
+
+    const cameraService = new CameraService();
+    
+    try {
+      // Subir imagen a Firebase Storage
+      const imageUrl = await cameraService.uploadPhoto(
+        base64Image, 
+        user.uid, 
+        response.tipo, 
+        "residuo"
+      );
+
+      // Guardar registro en Firestore
+      await cameraService.saveRecycleRecord(user.uid, imageUrl, response.tipo);
+
+      return imageUrl;
+    } catch (error) {
+      console.error('Error al guardar en Firebase:', error);
+      throw error;
+    }
+  };
+
+  const saveImageLocally = async (base64Image: string, response: ReponseInterface) => {
+    try {
+      LocalStorageService.saveRecyclingData({
+        imageUrl: base64Image,
+        tipo: response.tipo,
+        consejo: response.consejo,
+        confianza: response.confianza,
+        detalles: response.detalles,
+        timestamp: new Date().toISOString(),
+        userId: user?.uid || 'anonymous'
+      });
+    } catch (error) {
+      console.error('Error al guardar localmente:', error);
+      // No lanzar error aquí para no interrumpir el flujo principal
+    }
+  };
+
+  const handleSaveImage = async () => {
+    if (!previewData.imageUrl || !previewData.response) {
+      setErrorMessage('No hay imagen o respuesta válida para guardar');
+      setShowErrorToast(true);
+      return;
+    }
+
+    setIsSaving(true);
+    
+    try {
+      // Guardar en Firebase
+      await saveImageToFirebase(previewData.imageUrl, previewData.response);
+      
+      // Guardar localmente
+      await saveImageLocally(previewData.imageUrl, previewData.response);
+      
+      // Mostrar éxito
+      setShowSuccessModal(true);
+      setSuccessTipo(previewData.response.tipo);
+      
+      // Cerrar preview
+      setPreviewData(prev => ({ ...prev, show: false }));
+      
+    } catch (error: unknown) {
+      console.error('Error al guardar:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error al guardar la imagen';
+      setErrorMessage(errorMessage);
+      setShowErrorToast(true);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleBack = () => {
     stopCamera()
     history.goBack()
   }
+
   const startCamera = async () => {
     if (isCamaraActive) {
       console.log("La cámara ya está activa.");
@@ -96,6 +186,7 @@ const CameraScreen: React.FC = () => {
       console.warn("Error al detener la cámara", error);
     }
   };
+
   const takePicture = async () => {
     console.log('Tomando foto...');
 
@@ -112,20 +203,29 @@ const CameraScreen: React.FC = () => {
         const base64Image = result.value.startsWith('data:')
           ? result.value
           : `data:image/jpeg;base64,${result.value}`;
-        // setImage(base64Image);
 
+        const cameraService = new CameraService()
+        const response: ReponseInterface = await cameraService.analyzeImageWithIA(base64Image)
+        
+        // Validar respuesta
+        if (response.success !== 200 || response.tipo === 'error') {
+          setErrorMessage('No se pudo identificar el residuo. Intenta con una imagen más clara.');
+          setShowErrorToast(true);
+          return;
+        }
 
-        const camaraService = new CameraService()
-        const response: ReponseInterface = await camaraService.analyzeImageWithIA(base64Image)
         setPreviewData({
           show: true,
           title: response.tipo,
           content: response.consejo || 'Sin resultados',
           imageUrl: base64Image,
+          response: response,
         });
       }
     } catch (error) {
       console.error('Error al tomar la foto: ', error)
+      setErrorMessage('Error al procesar la imagen. Intenta de nuevo.');
+      setShowErrorToast(true);
     }
   }
 
@@ -183,8 +283,39 @@ const CameraScreen: React.FC = () => {
             content={previewData.content}
             imageUrl={previewData.imageUrl}
             setShow={(val: boolean) => setPreviewData(prev => ({ ...prev, show: val }))}
+            onSave={handleSaveImage}
+            isSaving={isSaving}
+            response={previewData.response}
           />
         )}
+
+        {/* Modal de éxito */}
+        <SuccessModal
+          show={showSuccessModal}
+          tipo={successTipo}
+          onClose={() => setShowSuccessModal(false)}
+          onContinue={() => {
+            setShowSuccessModal(false);
+            // Aquí podrías agregar lógica adicional para continuar escaneando
+          }}
+        />
+
+        {/* Toast de error */}
+        <IonToast
+          isOpen={showErrorToast}
+          onDidDismiss={() => setShowErrorToast(false)}
+          message={errorMessage}
+          duration={4000}
+          position="top"
+          color="danger"
+          buttons={[
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]}
+        />
+
         {/* top bar */}
         <div className='absolute top-0 left-0 right-0 flex items-center justify-between px-2 py-3 '>
           <IonButton
@@ -210,7 +341,6 @@ const CameraScreen: React.FC = () => {
             />
           </IonButton>
         </div>
-
 
         {/* bottom bar */}
         <div className='absolute bottom-0 left-0 right-0 flex items-center justify-between px-12 py-4 bg-black opacity-80'>
@@ -257,7 +387,6 @@ const CameraScreen: React.FC = () => {
           </div>
 
         </div>
-
 
         <NivelSubidoModal
           url={image}
