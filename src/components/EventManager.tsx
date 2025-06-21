@@ -45,6 +45,7 @@ export const EventManager: React.FC<EventManagerProps> = ({ children }) => {
 
     // Manejador unificado para eventos de nivel
     const handleLevelUp = useCallback((...args: unknown[]) => {
+        
         const newLevel = args[0] as number || 1;
         const modalConfig = args[1] as ModalProps || {}; // Configuración opcional
         
@@ -76,6 +77,7 @@ export const EventManager: React.FC<EventManagerProps> = ({ children }) => {
 
     // Manejador para eventos de misión completada
     const handleMissionCompleted = useCallback((...args: unknown[]) => {
+        
         const missionData = args[0] as { title: string; xp: number };
         const modalConfig = args[1] as ModalProps || {}; // Configuración opcional
         

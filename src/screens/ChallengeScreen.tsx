@@ -21,6 +21,8 @@ import { MissionCard } from '../components/MissionCard';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { useMissionsStore } from '../store/missionsStore';
 import { useAuth } from '../contexts/authContext';
+import { useMissionNotifications } from '../hooks/useMissionNotifications';
+import { MissionNotification } from '../components/MissionNotification';
 
 const initializeStatusBar = async () => {
   try {
@@ -50,6 +52,13 @@ const ChallengeScreen = () => {
     completeMission,
   } = useMissionsStore();
 
+  const {
+    showNotification,
+    notificationData,
+    checkAndShowAchievements,
+    dismissNotification
+  } = useMissionNotifications();
+
   useIonViewWillEnter(() => {
     if (user?.uid) {
       loadMissions(user.uid);
@@ -68,6 +77,8 @@ const ChallengeScreen = () => {
   const handleCompleteMission = async (missionId: string) => {
     if (user?.uid) {
       await completeMission(user.uid, missionId);
+      // Verificar logros, insignias y títulos después de completar la misión
+      await checkAndShowAchievements(user.uid);
     }
   };
 
@@ -226,6 +237,19 @@ const ChallengeScreen = () => {
           </LinearGradient>
 
         )}
+
+        {/* Notificación de misiones */}
+        <MissionNotification
+          isOpen={showNotification}
+          onDidDismiss={dismissNotification}
+          type={notificationData.type}
+          message={notificationData.message}
+          xp={notificationData.xp}
+          level={notificationData.level}
+          achievement={notificationData.achievement}
+          badge={notificationData.badge}
+          title={notificationData.title}
+        />
       </IonContent>
     </IonPage>
   );

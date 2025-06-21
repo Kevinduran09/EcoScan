@@ -124,8 +124,8 @@ export class DailyMissionsService {
       // Actualizar estadísticas del usuario (XP, nivel, logros, etc.)
       await UserStatsService.onMissionCompleted(userId, mission);
       
-      // Verificar y otorgar logros
-      await UserStatsService.checkAndAwardAchievements(userId);
+      // // Verificar y otorgar logros
+      // await UserStatsService.checkAndAwardAchievements(userId);
       
   
       

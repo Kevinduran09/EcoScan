@@ -1,25 +1,22 @@
 import { IonContent, IonPage } from '@ionic/react';
-import '../theme/variables.css';
+import React from 'react';
+import Container from '../components/ui/Container';
+import Title from '../components/ui/Title';
+import Text from '../components/ui/Text';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/authContext';
+import { useDailyValidation } from '../hooks/useDailyValidation';
 import LevelProgress from '../components/LevelProgress';
-import Card from '../components/Card';
-import data from '../data.json'
 import StreakCard from '../components/StreakCard';
 import StatsCard from '../components/StatsCard';
 import TodayProgress from '../components/TodayProgress';
 import QuickActions from '../components/QuickActions';
-import Title from '../components/ui/Title';
-import Text from '../components/ui/Text';
-import Container from '../components/ui/Container';
-import { StatusBar, Style } from '@capacitor/status-bar';
-import { Link } from 'react-router-dom';
-import Avatar from '../components/Avatar';
-import { useAuth } from '../contexts/authContext';
 import { Recents } from '../components/Recents';
-
-import { useDailyValidation } from '../hooks/useDailyValidation';
 import { achievementService } from '../services/AchievementService';
-import Button from '../components/ui/Button';
-
+import { StatusBar, Style } from '@capacitor/status-bar';
+import{ACHIEVEMENTS} from '../utils/constant'
 const initializeStatusBar = async () => {
     try {
         await StatusBar.setStyle({ style: Style.Light });
@@ -35,8 +32,8 @@ const initializeStatusBar = async () => {
 initializeStatusBar();
 
 const HomeScreen: React.FC = () => {
-    const { achievements } = data.data;
-    const { userData } = useAuth();
+    const { user,userData } = useAuth();
+  
     // const { openModal, emitLevelUp, emitBadgeUnlocked, emitMissionCompleted } = useEventManager();
 
     // Validar progreso diario al entrar
@@ -52,6 +49,9 @@ const HomeScreen: React.FC = () => {
     const getMotivationalMessage = () => {
         return '¡Comienza tu día reciclando algo! 🌱';
     };
+
+    // Calcular valor para StatsCard
+    const achievementsValue = `${userData?.achievements?.length || 0}/${ACHIEVEMENTS.length}`;
 
     return (
         <IonPage >
@@ -70,7 +70,11 @@ const HomeScreen: React.FC = () => {
                             </div>
                             <div className='bg-white rounded-full size-15 flex items-center justify-center'>
                                 <Link to="/profile">
-                                    <Avatar size={56} url={userData?.avatar} />
+                                    <img 
+                                        src={userData?.avatar}
+                                        alt="Avatar" 
+                                        className="w-14 h-14 rounded-full object-cover" 
+                                    />
                                 </Link>
                             </div>
                         </div>
@@ -95,8 +99,8 @@ const HomeScreen: React.FC = () => {
 
                         {/* Daily Goals */}
                         <div className='flex flex-row justify-stretch gap-5'>
-                            <StreakCard streak={userData?.dailyMissionStreak || 0} />
-                            <StatsCard title='Logros' value={`${userData?.achievements.length}/${achievements.length}`} />
+                            <StreakCard uuid={user?.uid}/>
+                            <StatsCard title='Logros' value={achievementsValue} />
                         </div>
 
                         {/* Progress today */}

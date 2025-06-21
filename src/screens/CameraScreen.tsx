@@ -325,6 +325,8 @@ const CameraScreen: React.FC = () => {
           xp={notificationData.xp}
           level={notificationData.level}
           achievement={notificationData.achievement}
+          badge={notificationData.badge}
+          title={notificationData.title}
         />
 
         {/* Toast de error */}

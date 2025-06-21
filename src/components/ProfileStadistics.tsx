@@ -1,64 +1,82 @@
-import React from 'react'
-import Title from './ui/Title'
-import { leaf, flame, trophy, star } from 'ionicons/icons'
-import Card from './Card'
-import { IonIcon } from '@ionic/react'
-import { useAuth } from '../contexts/authContext'
+import React, { useEffect, useState } from 'react';
+import Title from './ui/Title';
+import Card from './Card';
+import { IonIcon } from '@ionic/react';
+import { leaf, flame, trophy, star } from 'ionicons/icons';
+import { useAuth } from '../contexts/authContext';
+import { dailyProgressService } from '../services/firebase/DailyProgressService';
 
 const ProfileStadistics = () => {
-    const { userData } = useAuth()
+    const { userData } = useAuth();
+    const [dailyStreak, setDailyStreak] = useState<number>(0);
+    const [bestStreak, setBestStreak] = useState<number>(0);
 
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!userData?.id) return;
+
+            try {
+                const { bestStreak, dailyStreak } = await dailyProgressService.getDailyStats(userData.id)
+                setDailyStreak(dailyStreak || 0);
+                setBestStreak(bestStreak || 0);
+            } catch (err) {
+                console.error('Error al obtener estadísticas del perfil:', err);
+                setDailyStreak(0);
+                setBestStreak(0);
+            }
+        };
+
+        fetchStats();
+    }, [userData?.id]);
 
     const estadisticas = [
         {
             icon: leaf,
             title: 'Objetos Reciclados',
-            value: userData?.totalRecycled,
-            color: '#0d8e0b'
+            value: userData?.totalRecycled ?? 0,
+            color: '#0d8e0b',
         },
         {
             icon: flame,
             title: 'Racha Actual',
-            value: userData?.dailyMissionStreak,
-            color: '#FF6B35'
+            value: dailyStreak,
+            color: '#FF6B35',
         },
         {
             icon: trophy,
             title: 'Mejor Racha',
-            value: 0,
-            color: '#fdd700'
+            value: bestStreak,
+            color: '#fdd700',
         },
         {
             icon: star,
             title: 'Logros',
-            value: userData?.achievements.length,
-            color: '#a113ad'
-        }
-    ]
+            value: userData?.achievements?.length ?? 0,
+            color: '#a113ad',
+        },
+    ];
 
     return (
-        <div className='w-full'>
-            <Title variant='h2' color='white' className="">Estadísticas</Title>
-            <div className="columns-2 w-full mt-2">
-                {
-                    estadisticas.map((item, index) => (
-                        <Card key={index} className='py-4 px-2'>
-                            <div className='flex flex-col text-wrap items-center space-y-2'>
-                                <IonIcon icon={item.icon} className={`size-10`} style={{ color: item.color }}></IonIcon>
-                                <span className='text-2xl font-bold'>{item.value}</span>
-                                <span>{item.title}</span>
-                            </div>
-                        </Card>
-                    ))
-
-                }
+        <div className="w-full">
+            <Title variant="h2" color="white">Estadísticas</Title>
+            <div className="grid grid-cols-2 gap-4 w-full mt-2">
+                {estadisticas.map((item, index) => (
+                    <Card key={index} className="py-4 px-2">
+                        <div className="flex flex-col text-wrap items-center space-y-2">
+                            <IonIcon icon={item.icon} className="size-10" style={{ color: item.color }} />
+                            <span className="text-2xl font-bold">{item.value}</span>
+                            <span>{item.title}</span>
+                        </div>
+                    </Card>
+                ))}
             </div>
-
         </div>
-    )
-}
+    );
+};
 
-export default ProfileStadistics
+export default ProfileStadistics;
+
+
 
 /*   
 <div className="grid grid-cols-2 gap-4 w-full mt-2">

@@ -1,15 +1,17 @@
 import React from 'react';
 import { IonToast } from '@ionic/react';
-import { checkmarkCircle, trophy, star } from 'ionicons/icons';
+import { checkmarkCircle, trophy, star, medal } from 'ionicons/icons';
 
 interface MissionNotificationProps {
   isOpen: boolean;
   onDidDismiss: () => void;
-  type: 'mission_completed' | 'level_up' | 'achievement_unlocked';
+  type: 'mission_completed' | 'level_up' | 'achievement_unlocked' | 'badge_unlocked' | 'title_unlocked';
   message: string;
   xp?: number;
   level?: number;
   achievement?: string;
+  badge?: string;
+  title?: string;
 }
 
 export const MissionNotification: React.FC<MissionNotificationProps> = ({
@@ -19,7 +21,9 @@ export const MissionNotification: React.FC<MissionNotificationProps> = ({
   message,
   xp,
   level,
-  achievement
+  achievement,
+  badge,
+  title
 }) => {
   const getIcon = () => {
     switch (type) {
@@ -28,6 +32,10 @@ export const MissionNotification: React.FC<MissionNotificationProps> = ({
       case 'level_up':
         return star;
       case 'achievement_unlocked':
+        return trophy;
+      case 'badge_unlocked':
+        return medal;
+      case 'title_unlocked':
         return trophy;
       default:
         return checkmarkCircle;
@@ -42,6 +50,10 @@ export const MissionNotification: React.FC<MissionNotificationProps> = ({
         return 'warning';
       case 'achievement_unlocked':
         return 'primary';
+      case 'badge_unlocked':
+        return 'secondary';
+      case 'title_unlocked':
+        return 'tertiary';
       default:
         return 'success';
     }
@@ -60,6 +72,14 @@ export const MissionNotification: React.FC<MissionNotificationProps> = ({
     
     if (achievement) {
       baseMessage += ` 🏆 ${achievement}`;
+    }
+
+    if (badge) {
+      baseMessage += ` 🏅 ${badge}`;
+    }
+
+    if (title) {
+      baseMessage += ` 👑 ${title}`;
     }
     
     return baseMessage;

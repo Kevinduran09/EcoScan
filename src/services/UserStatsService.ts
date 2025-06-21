@@ -4,6 +4,10 @@ import { Mission } from '../types/Mission';
 import { getAllBadges } from '../services/firebase/BadgesService';
 import { getRecyclingProgress } from './firebase/RecyclingProgressService';
 import { eventBus, EVENTS } from '../utils/eventBus';
+import { ACHIEVEMENTS, checkAchievementCondition } from '../utils/constant';
+import { achievementService } from './AchievementService';
+import { dailyProgressService } from './firebase/DailyProgressService';
+
 export interface UserStats {
   level: number;
   xp: number;
@@ -24,9 +28,13 @@ export class UserStatsService {
     try {
       const userRef = doc(db, 'users', userId);
       const userSnap = await getDoc(userRef);
-      
+      const { dailyStreak } = await dailyProgressService.getDailyStats(userId)
       if (userSnap.exists()) {
-        return userSnap.data() as UserStats;
+        return{
+          ...userSnap.data(),
+          dailyMissionStreak:dailyStreak
+        } as UserStats
+     ;
       }
       
       return null;
@@ -39,7 +47,7 @@ export class UserStatsService {
   /**
    * Añade experiencia al usuario y maneja el aumento de nivel
    */
-  static async addExperience(userId: string, xpToAdd: number, onLevelUp?: (newLevel: number) => void): Promise<{ newLevel: number; leveledUp: boolean; totalXp: number }> {
+  static async addExperience(userId: string, xpToAdd: number): Promise<{ newLevel: number; leveledUp: boolean; totalXp: number }> {
     try {
       const userRef = doc(db, 'users', userId);
       const userSnap = await getDoc(userRef);
@@ -52,18 +60,18 @@ export class UserStatsService {
       const newXp = userData.xp + xpToAdd;
       let newLevel = userData.level;
       let leveledUp = false;
-
+      
       // Calcular XP necesario para el siguiente nivel
       const xpForNextLevel = this.calculateXpForLevel(newLevel + 1);
-      debugger
+      
       // Verificar si subió de nivel
       if (newXp >= xpForNextLevel) {
         newLevel++;
         leveledUp = true;
         console.log(`🎉 ¡Nivel subido! Nuevo nivel: ${newLevel}`);
-        eventBus.emit(EVENTS.LEVEL_UP)
+        eventBus.emit(EVENTS.LEVEL_UP, newLevel);
         
-       
+      
       }
 
       // Actualizar en Firebase
@@ -74,6 +82,9 @@ export class UserStatsService {
         totalPoints: increment(xpToAdd),
         lastSeen: serverTimestamp()
       });
+
+      // Emitir evento para actualizar el contexto
+      eventBus.emit(EVENTS.USER_STATS_UPDATED, { userId });
 
       return {
         newLevel,
@@ -90,24 +101,30 @@ export class UserStatsService {
   /**
    * Actualiza las estadísticas cuando se completa una misión
    */
-  static async onMissionCompleted(userId: string, mission: Mission, onLevelUp?: (newLevel: number) => void): Promise<void> {
+  static async onMissionCompleted(userId: string, mission: Mission): Promise<void> {
     try {
+      debugger
       // Añadir experiencia de la misión
-      const result = await this.addExperience(userId, mission.xp, onLevelUp);
+      const result = await this.addExperience(userId, mission.xp);
       
       // Actualizar contador de reciclajes si es una misión de reciclaje
       if (mission.type === 'material_recycle' || mission.type === 'count_recycle') {
         await this.incrementRecycledCount(userId);
       }
 
-      // // Actualizar racha de misiones diarias
-      // await this.updateMissionStreak(userId);
-
       console.log(`✅ Misión completada: +${mission.xp} XP`);
       
       if (result.leveledUp) {
         console.log(`🎉 ¡Nivel subido a ${result.newLevel}!`);
       }
+      
+      eventBus.emit(EVENTS.MISSION_COMPLETED,{
+        title:mission.description,
+        xp: mission.xp
+      })
+      
+      // Emitir evento para actualizar el contexto
+      eventBus.emit(EVENTS.USER_STATS_UPDATED, { userId });
 
     } catch (error) {
       console.error('❌ Error procesando misión completada:', error);
@@ -176,37 +193,36 @@ export class UserStatsService {
    */
   static async checkAndAwardAchievements(userId: string): Promise<string[]> {
     try {
+      debugger
       const userStats = await this.getUserStats(userId);
       if (!userStats) return [];
 
       const newAchievements: string[] = [];
       const currentAchievements = userStats.achievements || [];
+      let totalRewardXP = 0;
 
-      // Logros basados en nivel
-      if (userStats.level >= 5 && !currentAchievements.includes('level_5')) {
-        newAchievements.push('level_5');
-      }
-      if (userStats.level >= 10 && !currentAchievements.includes('level_10')) {
-        newAchievements.push('level_10');
-      }
-
-      // Logros basados en reciclaje total
-      if (userStats.totalRecycled >= 10 && !currentAchievements.includes('recycler_10')) {
-        newAchievements.push('recycler_10');
-      }
-      if (userStats.totalRecycled >= 50 && !currentAchievements.includes('recycler_50')) {
-        newAchievements.push('recycler_50');
-      }
-
-      // Logros basados en racha
-      if (userStats.dailyMissionStreak >= 3 && !currentAchievements.includes('streak_3')) {
-        newAchievements.push('streak_3');
-      }
-      if (userStats.dailyMissionStreak >= 7 && !currentAchievements.includes('streak_7')) {
-        newAchievements.push('streak_7');
+      for (const achievement of ACHIEVEMENTS) {
+        
+        if (!currentAchievements.includes(achievement.id)) {
+      
+          if (checkAchievementCondition(achievement, {
+            level: userStats.level,
+            totalRecycled: userStats.totalRecycled,
+            dailyMissionStreak: userStats.dailyMissionStreak
+          })) {
+            newAchievements.push(achievement.id);
+            
+            // Acumular XP de recompensa
+            if (achievement.rewardXP) {
+              totalRewardXP += achievement.rewardXP;
+            }
+            
+           
+          }
+        }
       }
 
-      // Si hay nuevos logros, actualizar en Firebase
+
       if (newAchievements.length > 0) {
         const userRef = doc(db, 'users', userId);
         await updateDoc(userRef, {
@@ -214,7 +230,12 @@ export class UserStatsService {
           lastSeen: serverTimestamp()
         });
 
-        console.log(`🏆 Nuevos logros desbloqueados: ${newAchievements.join(', ')}`);
+        // Añadir experiencia por los logros desbloqueados
+        if (totalRewardXP > 0) {
+          await this.addExperience(userId, totalRewardXP);
+       
+        }
+
       }
 
       return newAchievements;
@@ -231,7 +252,7 @@ export class UserStatsService {
     try {
       const userStats = await this.getUserStats(userId);
       if (!userStats) return [];
-      debugger
+      
       const newBadges: string[] = [];
       const currentBadges = userStats.medals || [];
 

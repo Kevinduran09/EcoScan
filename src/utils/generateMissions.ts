@@ -63,7 +63,8 @@ function generateMission(type: MissionType): Mission | null {
             type: 'material_recycle',
             material,
             target,
-            xp
+            xp,
+            description: `Recicla ${target} objetos de ${material}`
         } as Mission;
     }
     if (type === 'item_category') {
@@ -78,7 +79,8 @@ function generateMission(type: MissionType): Mission | null {
             material,
             item,
             target,
-            xp
+            xp,
+            description: `Recicla ${target} ${item}s de ${material}`
         } as Mission;
     }
     if (type === 'count_recycle'){
@@ -87,7 +89,8 @@ function generateMission(type: MissionType): Mission | null {
         return {
             ...base,
             target,
-            xp
+            xp,
+            description: `Supera los ${target} reciclajes`
         } as Mission;
     }
     // if (type === 'shared_mission') {

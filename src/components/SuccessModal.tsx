@@ -3,7 +3,7 @@ import { IonIcon } from '@ionic/react';
 import { checkmarkCircle, trophy, leaf } from 'ionicons/icons';
 import Card from './Card';
 import Button from './ui/Button';
-
+import { useHistory } from 'react-router';
 interface SuccessModalProps {
   show: boolean;
   onClose: () => void;
@@ -13,12 +13,12 @@ interface SuccessModalProps {
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({
   show,
-  onClose,
+
   tipo,
   onContinue
 }) => {
   if (!show) return null;
-
+  const history = useHistory()
   const getCategoryIcon = (tipo: string) => {
     const icons: Record<string, string> = {
       'carton': '📦',
@@ -106,10 +106,10 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             <Button
               variant="info"
               fullWidth
-              onClick={onClose}
+              onClick={()=>history.push('/home')}
               className="!rounded-lg !py-3"
             >
-              Ver historial
+              Salir
             </Button>
           </div>
         </div>

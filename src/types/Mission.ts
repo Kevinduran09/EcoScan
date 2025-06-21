@@ -7,6 +7,7 @@ type BaseMission = {
   progresoActual: number;
   fechaAsignacion: string;
   fechaExpiracion: string;
+  description: string;
 }
 
 type MaterialRecycleMission = BaseMission & {

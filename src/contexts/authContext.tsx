@@ -1,12 +1,10 @@
-
-
 import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth, authReady } from "../core/firebaseConfig";
 import { createOrUpdateUserProfile, UserProfile } from "../utils/createOrUpdateUserProfile";
 import { DailyMissionsService } from "../services/DailyMissionsService";
-import PushNotificationService from "../services/PushNotificationService";
+import { eventBus, EVENTS } from "../utils/eventBus";
 
 interface AuthContextProps {
   user: User | null;
@@ -14,6 +12,7 @@ interface AuthContextProps {
   isNewUser: boolean;
   userData: UserProfile | null;
   setRegistrationData: (data: { displayName?: string }) => void;
+  refreshUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({ 
@@ -21,8 +20,8 @@ const AuthContext = createContext<AuthContextProps>({
   loading: true, 
   isNewUser: false, 
   userData: null,
-  setRegistrationData: () => {}
-
+  setRegistrationData: () => {},
+  refreshUserData: async () => {}
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -94,8 +93,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     registrationDataRef.current = registrationData;
   }, [registrationData]);
 
+  const refreshUserData = async () => {
+    if (user) {
+      try {
+        const { userData: updatedUserData } = await createOrUpdateUserProfile(user, {});
+        setUserData(updatedUserData);
+      } catch (error) {
+        console.error("Error refreshing user data:", error);
+      }
+    }
+  };
+
+  // Listener para eventos de actualización de estadísticas
+  useEffect(() => {
+    const handleUserStatsUpdate = () => {
+      
+      refreshUserData();
+    };
+
+    const handleLevelUp = () => {
+      refreshUserData();
+    };
+
+    const handleMissionCompleted = () => {
+      refreshUserData();
+    };
+
+    // Suscribirse a eventos
+    eventBus.on(EVENTS.USER_STATS_UPDATED, handleUserStatsUpdate);
+    eventBus.on(EVENTS.LEVEL_UP, handleLevelUp);
+    eventBus.on(EVENTS.MISSION_COMPLETED, handleMissionCompleted);
+
+    return () => {
+      eventBus.off(EVENTS.USER_STATS_UPDATED, handleUserStatsUpdate);
+      eventBus.off(EVENTS.LEVEL_UP, handleLevelUp);
+      eventBus.off(EVENTS.MISSION_COMPLETED, handleMissionCompleted);
+    };
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, isNewUser, userData, setRegistrationData }}>
+    <AuthContext.Provider value={{ user, loading, isNewUser, userData, setRegistrationData, refreshUserData }}>
       {children}
     </AuthContext.Provider>
   );

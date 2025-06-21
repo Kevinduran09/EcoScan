@@ -1,15 +1,15 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../core/firebaseConfig';
 import { eventBus, EVENTS } from '../../utils/eventBus';
-import celebration from '../../animations/celebration.json';
 import { UserStatsService } from '../UserStatsService';
-
+import dailyCelebration from '../../animations/dailyQuest.json'
 export interface DailyProgress {
   currentProgress: number;
   lastRecycleDate: string; // ISO string
   dailyStreak: number;
   totalRecycled: number;
   targetDaily: number;
+  bestStreak: number;
 }
 
 export class DailyProgressService {
@@ -33,7 +33,8 @@ export class DailyProgressService {
           lastRecycleDate: new Date().toISOString(),
           dailyStreak: 0,
           totalRecycled: 0,
-          targetDaily: this.TARGET_DAILY
+          targetDaily: this.TARGET_DAILY,
+          bestStreak:0
         };
         
         await setDoc(progressDocRef, initialProgress);
@@ -56,10 +57,14 @@ export class DailyProgressService {
 
       // Si es un nuevo día, reiniciar progreso
       if (today !== lastRecycleDay) {
+
+        const completedYesterday = progress.currentProgress >= progress.targetDaily
+
         const updatedProgress: DailyProgress = {
           ...progress,
           currentProgress: 0,
-          lastRecycleDate: new Date().toISOString()
+          lastRecycleDate: new Date().toISOString(),
+          dailyStreak: completedYesterday ? progress.dailyStreak : 0
         };
 
         await this.updateDailyProgress(userId, updatedProgress);
@@ -103,21 +108,20 @@ export class DailyProgressService {
     }
   }
 
-  // Manejar cuando se completa la meta diaria
+
   private async handleDailyGoalCompleted(userId: string, progress: DailyProgress): Promise<void> {
     try {
   
       const newStreak = progress.dailyStreak + 1;
       
-
       const updatedProgress: DailyProgress = {
         ...progress,
-        dailyStreak: newStreak
+        dailyStreak: newStreak,
+        bestStreak: newStreak
       };
 
       await this.updateDailyProgress(userId, updatedProgress);
 
-      // Usar el método estático para añadir experiencia
       await UserStatsService.addExperience(userId, this.XP_REWARD);
       
       this.showDailyGoalCompletedModal(newStreak);
@@ -129,10 +133,6 @@ export class DailyProgressService {
   }
 
 
-
-  /**
-   * Mostrar modal de celebración por completar meta diaria
-   */
   private showDailyGoalCompletedModal(streak: number): void {
     eventBus.emit(EVENTS.MISSION_COMPLETED, 
       { 
@@ -142,8 +142,8 @@ export class DailyProgressService {
       {
         title: "🎉 ¡Meta Diaria Completada!",
         description: `¡Has reciclado 3 objetos hoy!\n\n+${this.XP_REWARD} XP ganados\nRacha actual: ${streak} días`,
-        animation: celebration,
-        sound: '/level-up.mp3',
+        animation: dailyCelebration,
+        sound: '/dailyCelebration.mp3',
         buttonText: '¡Continuar!',
         vibrate: true
       }
@@ -173,6 +173,7 @@ export class DailyProgressService {
     totalRecycled: number;
     isCompleted: boolean;
     progressPercentage: number;
+    bestStreak:number;
   }> {
     try {
       const progress = await this.validateAndResetDailyProgress(userId);
@@ -183,7 +184,8 @@ export class DailyProgressService {
         dailyStreak: progress.dailyStreak,
         totalRecycled: progress.totalRecycled,
         isCompleted: progress.currentProgress >= progress.targetDaily,
-        progressPercentage: Math.min((progress.currentProgress / progress.targetDaily) * 100, 100)
+        progressPercentage: Math.min((progress.currentProgress / progress.targetDaily) * 100, 100),
+        bestStreak:progress.bestStreak
       };
     } catch (error) {
       console.error("Error getting daily stats: ", error);

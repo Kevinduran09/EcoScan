@@ -87,7 +87,7 @@ const ProfileScreen: React.FC = () => {
         <div className="gradient-primary  flex-1">
           <Container padding="sm" className="space-y-5" >
             <div className="flex flex-col items-center h-full py-5 px-4 ">
-              <Avatar url={userData?.avatar} size={120} />
+              <Avatar url={userData?.avatar} size={120} editable={true} />
               <span className="effect-shimmer relative overflow-hidden bg-green-600/80 text-white text-sm px-4 py-1 rounded-full font-semibold !mt-8 mb-2 shadow"> {userData?.title} </span>
               <p className='text-zinc-200 text-lg py-3'>
                 {userData?.bio}

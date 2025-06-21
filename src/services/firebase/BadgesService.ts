@@ -1,6 +1,5 @@
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../core/firebaseConfig';
-import { eventBus, EVENTS } from '../../utils/eventBus';
 
 export interface Badge {
   id: string;

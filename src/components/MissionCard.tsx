@@ -11,18 +11,8 @@ interface Props {
 }
 export const MissionCard: React.FC<Props> = ({ mission }) => {
     const history = useHistory();
-    const { type, progresoActual, target, xp, fechaExpiracion } = mission
-    // Mensaje según tipo
-    const description = (() => {
-        if (type === 'material_recycle') {
-            return `Recicla ${mission.target} objetos de ${mission.material}`
-        } else if (type === 'item_category') {
-            return `Recicla ${mission.target} ${mission.item}s de ${mission.material}`
-        } else if (type === 'count_recycle') {
-            return `Supera los  ${mission.target} reciclajes`
-        }
-        return ''
-    })()
+    const { type, progresoActual, target, xp, fechaExpiracion, description } = mission
+    
     const title = (() => {
 
         if (type === 'material_recycle') {
