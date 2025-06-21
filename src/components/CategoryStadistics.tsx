@@ -29,11 +29,11 @@ export const CategoryStadistics = ({ user }: { user: User }) => {
     console.log(recyclingProgress);
     
     const mockStats = [
-        { label: 'Metal', count: recyclingProgress?.metal ?? 0, color: '#A4A4A4', icon: '🥫' },
+        { label: 'Aluminio', count: recyclingProgress?.aluminio ?? 0, color: '#A4A4A4', icon: '🥫' },
         { label: 'Plástico', count: recyclingProgress?.plastico ?? 0, color: '#2A9DF4', icon: '♻️' },
         { label: 'Vidrio', count: recyclingProgress?.vidrio ?? 0, color: '#3CB043', icon: '🍶' },
-        { label: 'Cartón', count: recyclingProgress?.cardboard ?? 0, color: '#FFA500', icon: '📦' },
-        { label: 'Orgánico', count: recyclingProgress?.organic ?? 0, color: '#76C043', icon: '🥬' },
+        { label: 'Cartón', count: recyclingProgress?.carton ?? 0, color: '#FFA500', icon: '📦' },
+        { label: 'Orgánico', count: recyclingProgress?.organico ?? 0, color: '#76C043', icon: '🥬' },
         { label: 'Papel', count: recyclingProgress?.papel ?? 0, color: '#8B4513', icon: '📄' },
         { label: 'Electronicos', count: recyclingProgress?.electronicos ?? 0, color: '#A710B1', icon: '📱' },
     ];

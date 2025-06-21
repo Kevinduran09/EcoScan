@@ -24,9 +24,9 @@ const actions: Array<{
     {
       icon: time,
       color: '#2778e9',
-      title: 'Historial',
-      description: 'Mira tu historial de reciclaje',
-      to: '/history',
+      title: 'Logros',
+      description: 'Mira tu logros de reciclaje',
+      to: '/badges',
 
     },
     {

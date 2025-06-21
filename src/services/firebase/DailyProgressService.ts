@@ -125,7 +125,7 @@ export class DailyProgressService {
       await this.updateDailyProgress(userId, updatedProgress);
 
       await UserStatsService.addExperience(userId, this.XP_REWARD);
-      
+      eventBus.emit(EVENTS.USER_STATS_UPDATED, { userId });
       this.showDailyGoalCompletedModal(newStreak);
 
     } catch (error) {
@@ -135,7 +135,7 @@ export class DailyProgressService {
   }
 
 
-  private showDailyGoalCompletedModal(streak: number): void {
+  public showDailyGoalCompletedModal(streak: number): void {
     eventBus.emit(EVENTS.MISSION_COMPLETED, 
       { 
         title: "¡Meta Diaria Completada!", 

@@ -6,6 +6,9 @@ export interface RecyclingProgress {
   electronicos: number;
   vidrio: number;
   metal: number;
+  aluminio:number;
+  carton:number;
+  organico:number;
   organic: number;
   papel: number;
   paper: number;

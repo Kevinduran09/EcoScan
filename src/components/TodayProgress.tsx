@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Card from './Card';
-import { IonIcon } from '@ionic/react';
+import { IonIcon, useIonViewWillEnter } from '@ionic/react';
 import { leafOutline } from 'ionicons/icons';
 import Title from './ui/Title';
 import Text from './ui/Text';
@@ -20,12 +20,13 @@ const TodayProgress: React.FC = () => {
     const [dailyStats, setDailyStats] = useState<dailyStatsInterface | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    useIonViewWillEnter(() => {
         const loadDailyStats = async () => {
             if (!user?.uid) return;
             
             try {
                 setLoading(true);
+           
                 const stats = await dailyProgressService.getDailyStats(user.uid);
                 setDailyStats(stats);
             } catch (error) {
@@ -36,7 +37,7 @@ const TodayProgress: React.FC = () => {
         };
 
         loadDailyStats();
-    }, [user?.uid]);
+    });
  
     
     const currentItems = dailyStats ? dailyStats.currentProgress : 0

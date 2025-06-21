@@ -17,6 +17,7 @@ import { Recents } from '../components/Recents';
 import { achievementService } from '../services/AchievementService';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import{ACHIEVEMENTS} from '../utils/constant'
+import { DailyProgressService, dailyProgressService } from '../services/firebase/DailyProgressService';
 const initializeStatusBar = async () => {
     try {
         await StatusBar.setStyle({ style: Style.Light });
@@ -117,7 +118,87 @@ const HomeScreen: React.FC = () => {
                         >
                             Nivel Especial (Servicio)
                         </Button>
+    <Button
+                            fullWidth
+                            onClick={() => emitLevelUp(5)}
+                        >
+                            Subir nivel (Componente)
+                        </Button>
+                        
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => emitBadgeUnlocked({
+                                name: "Reciclador Novato",
+                                description: "Has reciclado tu primer objeto"
+                            })}
+                        >
+                            Probar Badge (Componente)
+                        </Button>
+                        
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => emitMissionCompleted({
+                                title: "Reciclar 5 botellas",
+                                xp: 50
+                            })}
+                        >
+                            Probar Mission (Componente)
+                        </Button>
 
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.levelUp(10, true)}
+                        >
+                            Nivel Especial (Servicio)
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.unlockBadge(
+                                "Reciclador Experto", 
+                                "Has reciclado 100 objetos diferentes",
+                                "https://badges.com/experto.png"
+                            )}
+                        >
+                            Badge con Imagen (Servicio)
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.completeMission(
+                                "Misión Diaria Completa",
+                                100,
+                                true
+                            )}
+                        >
+                            Misión Especial (Servicio)
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.unlockSpecialAchievement(
+                                "Reciclador Legendario",
+                                "Has reciclado 1000 objetos en total"
+                            )}
+                        >
+                            Logro Especial (Servicio)
+                        </Button>
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => dailyProgressService.showDailyGoalCompletedModal(3)}
+                        >
+                            Logro Especial (Servicio)
+                        </Button>
+                        
+                  
                     </Container>
                 </div>
             </IonContent>

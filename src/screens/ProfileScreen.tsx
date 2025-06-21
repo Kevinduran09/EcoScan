@@ -1,5 +1,5 @@
 import { IonContent, IonPage, IonIcon, IonHeader, IonToolbar } from '@ionic/react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { arrowBack, logOutOutline } from 'ionicons/icons';
 import Container from '../components/ui/Container';
 import Title from '../components/ui/Title';
@@ -14,6 +14,7 @@ import { getBadgesByUserId, Badge } from '../services/firebase/BadgesService';
 import BadgeList from '../components/BadgeList';
 import Card from '../components/ui/Card';
 import { CategoryStadistics } from '../components/CategoryStadistics';
+import { useIonViewWillEnter } from '@ionic/react';
 
 const initializeStatusBar = async () => {
   try {
@@ -36,11 +37,13 @@ const ProfileScreen: React.FC = () => {
   const [loadingBadges, setLoadingBadges] = useState(true);
   const [errorBadges, setErrorBadges] = useState<string | null>(null);
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     const fetchBadges = async () => {
       if (!user) return;
       setLoadingBadges(true);
       try {
+      console.log('cargamdo');
+      
         const userBadges = await getBadgesByUserId(user.uid);
         setBadges(userBadges);
         setErrorBadges(null);
@@ -50,11 +53,8 @@ const ProfileScreen: React.FC = () => {
         setLoadingBadges(false);
       }
     };
-
-    if (user) {
-      fetchBadges();
-    }
-  }, [user]);
+    fetchBadges();
+  });
 
   const handleBack = () => {
     history.goBack();

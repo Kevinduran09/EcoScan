@@ -35,8 +35,6 @@ const initializeStatusBar = async () => {
   }
 };
 
-// Inicializar StatusBar
-initializeStatusBar();
 
 const ChallengeScreen = () => {
   const history = useHistory();
@@ -61,6 +59,7 @@ const ChallengeScreen = () => {
 
   useIonViewWillEnter(() => {
     if (user?.uid) {
+      initializeStatusBar();
       loadMissions(user.uid);
     }
   });
@@ -72,6 +71,7 @@ const ChallengeScreen = () => {
       await refreshMissions(user.uid);
     }
   };
+  console.log(missions);
 
   // Función para completar misión
   const handleCompleteMission = async (missionId: string) => {
@@ -195,9 +195,9 @@ const ChallengeScreen = () => {
             {/* Missions */}
             {!loading && !error && missions.length > 0 && (
               missions.map((mission) => (
-                <MissionCard 
-                  mission={mission} 
-                  key={mission.id} 
+                <MissionCard
+                  mission={mission}
+                  key={mission.id}
                   onCompleteMission={handleCompleteMission}
                 />
               ))
