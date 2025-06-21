@@ -1,9 +1,9 @@
-// src/contexts/authContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth, authReady } from "../core/firebaseConfig";
 import { createOrUpdateUserProfile, UserProfile } from "../utils/createOrUpdateUserProfile";
 import { DailyMissionsService } from "../services/DailyMissionsService";
+import PushNotificationService from "../services/PushNotificationService";
 
 interface AuthContextProps {
   user: User | null;
@@ -12,7 +12,12 @@ interface AuthContextProps {
   userData: UserProfile | null;
 }
 
-const AuthContext = createContext<AuthContextProps>({ user: null, loading: true, isNewUser: false, userData: null });
+const AuthContext = createContext<AuthContextProps>({
+  user: null,
+  loading: true,
+  isNewUser: false,
+  userData: null
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -20,23 +25,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
 
-
   const initializeDailyMissions = async (userId: string) => {
     try {
-      console.log('🚀 Inicializando misiones diarias...');
+      console.log("🚀 Inicializando misiones diarias...");
       await DailyMissionsService.getTodayMissions(userId);
-      console.log('✅ Misiones diarias inicializadas correctamente');
+      console.log("✅ Misiones diarias inicializadas correctamente");
     } catch (error) {
-      console.error('❌ Error inicializando misiones diarias:', error);
+      console.error("❌ Error inicializando misiones diarias:", error);
     }
   };
-
 
   const cleanOldData = () => {
     try {
       DailyMissionsService.cleanOldLocalData();
     } catch (error) {
-      console.warn('⚠️ Error limpiando datos antiguos:', error);
+      console.warn("⚠️ Error limpiando datos antiguos:", error);
     }
   };
 
@@ -49,8 +52,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUserData(userData);
           setUser(firebaseUser);
 
-          
           await initializeDailyMissions(firebaseUser.uid);
+
+          console.log("[Push] Usuario autenticado, iniciando notificaciones...");
+          const pushService = PushNotificationService.getInstance();
+          pushService.initialize();
         } else {
           setUser(null);
           setIsNewUser(false);
@@ -61,7 +67,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return () => unsubscribe();
     });
 
-    // Limpiar datos antiguos al iniciar la app
     cleanOldData();
   }, []);
 
