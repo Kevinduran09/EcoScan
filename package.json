@@ -19,7 +19,9 @@
     "@capacitor/core": "7.2.0",
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
+
     "@capacitor/preferences": "^7.0.1",
+
     "@capacitor/push-notifications": "^7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@codetrix-studio/capacitor-google-auth": "^3.4.0-rc.4",
@@ -32,6 +34,7 @@
     "blob-util": "^2.0.2",
     "canvas-confetti": "^1.9.3",
     "firebase": "^11.8.1",
+    "firebase-admin": "^13.4.0",
     "howler": "^2.2.4",
     "ionicons": "^7.4.0",
     "lottie-react": "^2.4.1",

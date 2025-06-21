@@ -24,6 +24,30 @@ const config: CapacitorConfig = {
         enableFlash: true, // Habilitar el flash en Android
       },
     },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+      android: {
+        icon: "ic_notification",
+        iconColor: "#4CAF50",
+        sound: "default",
+        vibrate: true,
+        channelId: "recycling-reminders",
+        channelName: "Recordatorios de Reciclaje",
+        channelDescription: "Notificaciones para recordar reciclar",
+        channelImportance: 4,
+        visibility: 1,
+        lights: true,
+        lightColor: "#4CAF50",
+        vibrationPattern: [0, 250, 250, 250],
+      },
+      ios: {
+        badge: true,
+        sound: "default",
+        alert: true,
+        critical: false,
+        category: "RECYCLING_REMINDER",
+      },
+    },
   }
 };
 
