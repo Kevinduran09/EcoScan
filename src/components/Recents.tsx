@@ -92,16 +92,7 @@ export const Recents = () => {
                     >
                         Actualizar
                     </Button>
-                    <Button
-                        iconPosition='right'
-                        size='sm'
-                        variant='ghost'
-                        className='text-white bg-white/10 !rounded-full p-2'
-                        icon={arrowForward}
-                        onClick={handleViewAll}
-                    >
-                        Ver todos
-                    </Button>
+                  
                 </div>
             </div>
 

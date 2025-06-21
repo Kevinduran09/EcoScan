@@ -13,7 +13,7 @@ interface DailyMissionsData {
 
 export class DailyMissionsService {
   private static readonly LOCAL_STORAGE_KEY = 'daily_missions_cache';
-
+  private static  CURRENT_TARGET =5
   static async getTodayMissions(userId: string): Promise<Mission[]> {
     try {
       const today = this.getTodayString();
@@ -26,7 +26,7 @@ export class DailyMissionsService {
         return data.missions;
       }
 
-      const newMissions = generateMissions(3);
+      const newMissions = generateMissions(this.CURRENT_TARGET);
       const missionsData: DailyMissionsData = {
         id: today,
         missions: newMissions,
@@ -45,7 +45,7 @@ export class DailyMissionsService {
       }
 
       console.log('Generando misiones offline');
-      return generateMissions(3);
+      return generateMissions(this.CURRENT_TARGET);
     }
   }
 
