@@ -39,7 +39,7 @@ export const Recents = () => {
         console.log(date.toISOString());
         const now = new Date();
         const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-        
+
         if (diffInHours < 1) return 'hace 1h';
         if (diffInHours < 24) return `hace ${diffInHours}h`;
         if (diffInHours < 48) return 'hace 1d';
@@ -48,12 +48,12 @@ export const Recents = () => {
 
     const getTypeIcon = (tipo: string) => {
         const icons: Record<string, string> = {
-            'plastic': '🥤',
-            'glass': '🍶',
-            'paper': '📄',
-            'metal': '🥫',
-            'organic': '🍎',
-            'cardboard': '📦'
+            'plastico': '🥤',
+            'vidrio': '🍶',
+            'papel': '📄',
+            'aluminio': '🥫',
+            'organicp': '🍎',
+            'carton': '📦'
         };
         return icons[tipo.toLowerCase()] || '♻️';
     };
@@ -66,9 +66,12 @@ export const Recents = () => {
         loadRecentItems();
     };
 
-    if (recentItems.length === 0){
-        return 
+    if (recentItems.length === 0) {
+        return
     }
+
+    console.log(recentItems);
+
     return (
         <div className='space-y-4'>
             <div className='flex flex-row justify-between items-center'>
@@ -129,12 +132,12 @@ export const Recents = () => {
                 ) : (
                     // Real data
                     recentItems.map((item) => (
-                        <div key={item.id} className="story-item bg-white overflow-hidden rounded-xl !w-36">
+                        <div key={item.id} className="story-item bg-white/85 overflow-hidden rounded-xl !w-36">
                             <div className="h-32 relative">
-                                <img 
-                                    src={item.imageUrl} 
+                                <img
+                                    src={item.imageUrl}
                                     alt={item.tipo}
-                                    className="h-full w-full object-cover" 
+                                    className="h-full w-full object-cover"
                                 />
                                 <div className='absolute top-0 right-0 m-3 bg-orange-500 rounded-full size-6 flex justify-center items-center'>
                                     <span className="text-xs">

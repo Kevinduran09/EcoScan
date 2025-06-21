@@ -19,6 +19,9 @@
     "@capacitor/core": "7.2.0",
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
+
+    "@capacitor/preferences": "^7.0.1",
+
     "@capacitor/push-notifications": "^7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@codetrix-studio/capacitor-google-auth": "^3.4.0-rc.4",
@@ -39,7 +42,8 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router": "^5.3.4",
-    "react-router-dom": "^5.3.4"
+    "react-router-dom": "^5.3.4",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@capacitor/cli": "7.2.0",

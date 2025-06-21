@@ -6,7 +6,8 @@ import {
   IonPage,
   IonSegment,
   IonSegmentButton,
-  IonToolbar
+  IonToolbar,
+  useIonViewWillEnter
 } from '@ionic/react';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
@@ -18,7 +19,8 @@ import '../theme/tabs.css';
 import Card from '../components/ui/Card';
 import { MissionCard } from '../components/MissionCard';
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { useDailyMissions } from '../hooks/useDailyMissions';
+import { useMissionsStore } from '../store/missionsStore';
+import { useAuth } from '../contexts/authContext';
 
 const initializeStatusBar = async () => {
   try {
@@ -37,30 +39,46 @@ initializeStatusBar();
 const ChallengeScreen = () => {
   const history = useHistory();
   const [selectedTab, setSelectedTab] = useState<'daily' | 'weekly'>('daily');
-  
+
+  const { user } = useAuth();
   const {
     missions,
     loading,
     error,
+    loadMissions,
     refreshMissions,
-    syncWithFirebase,
-    getMissionsStats,
-    getMissionsByStatus
-  } = useDailyMissions();
+    completeMission,
+  } = useMissionsStore();
+
+  useIonViewWillEnter(() => {
+    if (user?.uid) {
+      loadMissions(user.uid);
+    }
+  });
 
   const handleBack = () => history.goBack();
 
   const handleRefresh = async () => {
-    await refreshMissions();
+    if (user?.uid) {
+      await refreshMissions(user.uid);
+    }
   };
 
-  const handleSync = async () => {
-    await syncWithFirebase();
+  // Función para completar misión
+  const handleCompleteMission = async (missionId: string) => {
+    if (user?.uid) {
+      await completeMission(user.uid, missionId);
+    }
   };
 
-  // Obtener estadísticas
-  const stats = getMissionsStats();
-  const completedMissions = getMissionsByStatus('completada');
+  // Obtener estadísticas y misiones completadas
+  const stats = {
+    total: missions.length,
+    completed: missions.filter(m => m.estado === 'completada').length,
+    pending: missions.filter(m => m.estado !== 'completada').length,
+    progressPercentage: missions.length > 0 ? (missions.filter(m => m.estado === 'completada').length / missions.length) * 100 : 0,
+  };
+  const completedMissions = missions.filter(m => m.estado === 'completada');
 
   return (
     <IonPage>
@@ -108,7 +126,8 @@ const ChallengeScreen = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent>
+      <IonContent fullscreen
+      >
         {selectedTab === 'daily' ? (
           <LinearGradient colors={['#FF6B6B', '#FFD93D']} direction="to bottom" className="p-4 space-y-4 ">
 
@@ -126,8 +145,8 @@ const ChallengeScreen = () => {
                     <span>{Math.round(stats.progressPercentage)}%</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-2 mt-1">
-                    <div 
-                      className="bg-white rounded-full h-2 transition-all duration-300" 
+                    <div
+                      className="bg-white rounded-full h-2 transition-all duration-300"
                       style={{ width: `${stats.progressPercentage}%` }}
                     ></div>
                   </div>
@@ -142,17 +161,11 @@ const ChallengeScreen = () => {
                   Error: {error}
                 </Text>
                 <div className="flex gap-2">
-                  <button 
+                  <button
                     onClick={handleRefresh}
                     className="px-3 py-1 bg-red-500 text-white rounded text-sm"
                   >
                     Reintentar
-                  </button>
-                  <button 
-                    onClick={handleSync}
-                    className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
-                  >
-                    Sincronizar
                   </button>
                 </div>
               </Card>
@@ -171,7 +184,11 @@ const ChallengeScreen = () => {
             {/* Missions */}
             {!loading && !error && missions.length > 0 && (
               missions.map((mission) => (
-                <MissionCard mission={mission} key={mission.id} />
+                <MissionCard 
+                  mission={mission} 
+                  key={mission.id} 
+                  onCompleteMission={handleCompleteMission}
+                />
               ))
             )}
 
@@ -188,12 +205,14 @@ const ChallengeScreen = () => {
             )}
           </LinearGradient>
         ) : (
-          <div className="p-4">
-            <Text>Misiones completadas esta semana</Text>
+          <LinearGradient colors={['#FF6B6B', '#FFD93D']} direction="to bottom" className="p-4 space-y-4 h-full ">
+            <Text size='2xl' weight='semibold'>Misiones completadas esta semana</Text>
+
             {completedMissions.length > 0 ? (
               completedMissions.map((mission) => (
                 <MissionCard mission={mission} key={mission.id} />
               ))
+
             ) : (
               <Card className='space-y-4 text-center py-8 mt-4'>
                 <Text size='lg' weight='bold' color="gray">
@@ -204,7 +223,8 @@ const ChallengeScreen = () => {
                 </Text>
               </Card>
             )}
-          </div>
+          </LinearGradient>
+
         )}
       </IonContent>
     </IonPage>

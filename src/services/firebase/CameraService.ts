@@ -6,10 +6,12 @@ import { ReponseInterface } from "../../types/responseTypes";
 import { addDoc, collection, doc, increment, serverTimestamp, setDoc } from "firebase/firestore";
 import { invalidateRecyclingCache } from "./RecyclingCacheService";
 import { DailyMissionsService } from "../DailyMissionsService";
-
 export class CameraService {
 
     async saveRecycleRecord(userId: string, imageUrl: string, tipo: string) {
+
+      
+      
         // 1. Guardar en historial
         const historyRef = collection(db, `users/${userId}/recycle_history`);
         await addDoc(historyRef, {
@@ -25,10 +27,10 @@ export class CameraService {
         }, { merge: true });
 
         // avtualizar contador total
-        const userRef = doc(db,`users/${userId}`);
-        await setDoc(userRef,{
-          ["totalRecycled"]:increment(1)  
-        },{merge:true})
+        const userRef = doc(db, `users/${userId}`);
+        await setDoc(userRef, {
+            ["totalRecycled"]: increment(1)
+        }, { merge: true })
 
         // 3. Actualizar progreso de misiones diarias
         await this.updateMissionsProgress(userId, tipo);
@@ -91,7 +93,7 @@ export class CameraService {
         try {
             // Obtener misiones actuales
             const missions = await DailyMissionsService.getTodayMissions(userId);
-            
+
             // Actualizar progreso para misiones relevantes
             for (const mission of missions) {
                 let shouldUpdate = false;
@@ -108,13 +110,13 @@ export class CameraService {
                     shouldUpdate = true;
                     newProgress = Math.min(mission.progresoActual + 1, mission.target);
                 }
-                debugger
+
                 // Si la misión se completó, marcarla como completada
                 if (shouldUpdate && newProgress >= mission.target && mission.estado !== 'completada') {
                     await DailyMissionsService.completeMission(userId, mission.id);
                     console.log(`🎉 Misión completada: ${mission.id} - ${mission.type}`);
                 } else if (shouldUpdate && newProgress !== mission.progresoActual) {
-                    
+
                     await DailyMissionsService.updateMissionProgressOnlyInFirebase(userId, mission.id, newProgress);
                     console.log(`📈 Progreso actualizado para misión: ${mission.id} (${newProgress}/${mission.target})`);
                 }

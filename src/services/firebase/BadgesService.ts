@@ -1,5 +1,6 @@
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../core/firebaseConfig';
+import { eventBus, EVENTS } from '../../utils/eventBus';
 
 export interface Badge {
   id: string;
@@ -10,6 +11,9 @@ export interface Badge {
   completed: boolean;
   progress: number;
   label: string;
+  type:string;
+  target:number;
+  rewardXP:number;
   color: string;
 }
 
@@ -24,6 +28,7 @@ export class BadgesService {
   }
 
   static async getBadgesByUserId(userId: string): Promise<Badge[]> {
+
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
     if (!userSnap.exists()) return [];

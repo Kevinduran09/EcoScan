@@ -1,7 +1,9 @@
 import { doc, getDoc, updateDoc, increment, serverTimestamp, FieldValue } from 'firebase/firestore';
 import { db } from '../core/firebaseConfig';
 import { Mission } from '../types/Mission';
-
+import { getAllBadges } from '../services/firebase/BadgesService';
+import { getRecyclingProgress } from './firebase/RecyclingProgressService';
+import { eventBus, EVENTS } from '../utils/eventBus';
 export interface UserStats {
   level: number;
   xp: number;
@@ -37,7 +39,7 @@ export class UserStatsService {
   /**
    * Añade experiencia al usuario y maneja el aumento de nivel
    */
-  static async addExperience(userId: string, xpToAdd: number): Promise<{ newLevel: number; leveledUp: boolean; totalXp: number }> {
+  static async addExperience(userId: string, xpToAdd: number, onLevelUp?: (newLevel: number) => void): Promise<{ newLevel: number; leveledUp: boolean; totalXp: number }> {
     try {
       const userRef = doc(db, 'users', userId);
       const userSnap = await getDoc(userRef);
@@ -53,12 +55,15 @@ export class UserStatsService {
 
       // Calcular XP necesario para el siguiente nivel
       const xpForNextLevel = this.calculateXpForLevel(newLevel + 1);
-
+      debugger
       // Verificar si subió de nivel
       if (newXp >= xpForNextLevel) {
         newLevel++;
         leveledUp = true;
         console.log(`🎉 ¡Nivel subido! Nuevo nivel: ${newLevel}`);
+        eventBus.emit(EVENTS.LEVEL_UP)
+        
+       
       }
 
       // Actualizar en Firebase
@@ -85,18 +90,18 @@ export class UserStatsService {
   /**
    * Actualiza las estadísticas cuando se completa una misión
    */
-  static async onMissionCompleted(userId: string, mission: Mission): Promise<void> {
+  static async onMissionCompleted(userId: string, mission: Mission, onLevelUp?: (newLevel: number) => void): Promise<void> {
     try {
       // Añadir experiencia de la misión
-      const result = await this.addExperience(userId, mission.xp);
+      const result = await this.addExperience(userId, mission.xp, onLevelUp);
       
       // Actualizar contador de reciclajes si es una misión de reciclaje
       if (mission.type === 'material_recycle' || mission.type === 'count_recycle') {
         await this.incrementRecycledCount(userId);
       }
 
-      // Actualizar racha de misiones diarias
-      await this.updateMissionStreak(userId);
+      // // Actualizar racha de misiones diarias
+      // await this.updateMissionStreak(userId);
 
       console.log(`✅ Misión completada: +${mission.xp} XP`);
       
@@ -216,6 +221,55 @@ export class UserStatsService {
 
     } catch (error) {
       console.error('❌ Error verificando logros:', error);
+      return [];
+    }
+  }
+  /**
+   * Verifica y otorga insigneas basados en las estadísticas del usuario
+   */
+  static async checkAndAwardBadges(userId: string): Promise<string[]> {
+    try {
+      const userStats = await this.getUserStats(userId);
+      if (!userStats) return [];
+
+      const newBadges: string[] = [];
+      const currentBadges = userStats.medals || [];
+
+      const badges = await getAllBadges()
+      const userProgress = await getRecyclingProgress(userId)
+      if(userProgress == null) return []
+      
+      let totalRewardXP = 0;
+      
+      for (const badge of badges) {
+          if(!currentBadges.includes(badge.id) && userProgress[badge.type as keyof typeof userProgress] >= badge.target) {
+
+              newBadges.push(badge.id);
+              totalRewardXP += badge.rewardXP;
+          }
+      }
+      
+      // Si hay nuevas insignias, actualizar en Firebase
+      if (newBadges.length > 0) {
+        const userRef = doc(db, 'users', userId);
+        await updateDoc(userRef, {
+          medals: [...currentBadges, ...newBadges],
+          lastSeen: serverTimestamp()
+        });
+
+        // Añadir experiencia por las insignias desbloqueadas
+        if (totalRewardXP > 0) {
+          await this.addExperience(userId, totalRewardXP);
+          console.log(`🎉 +${totalRewardXP} XP por desbloquear ${newBadges.length} insignia(s)`);
+        }
+
+        console.log(`🏆 Nuevas insignias desbloqueadas: ${newBadges.join(', ')}`);
+      }
+
+      return newBadges;
+
+    } catch (error) {
+      console.error('❌ Error verificando insignias:', error);
       return [];
     }
   }

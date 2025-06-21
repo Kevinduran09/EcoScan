@@ -2,11 +2,12 @@ import { useState, useCallback } from 'react';
 import { UserStatsService } from '../services/UserStatsService';
 
 interface MissionNotificationData {
-  type: 'mission_completed' | 'level_up' | 'achievement_unlocked';
+  type: 'mission_completed' | 'level_up' | 'achievement_unlocked' | 'badge_unlocked';
   message: string;
   xp?: number;
   level?: number;
   achievement?: string;
+  badge?: string;
 }
 
 export const useMissionNotifications = () => {
@@ -43,17 +44,31 @@ export const useMissionNotifications = () => {
     setShowNotification(true);
   }, []);
 
+  const showBadgesUnlocked = useCallback((badge: string) => {
+    setNotificationData({
+      type: 'badge_unlocked',
+      message: '¡Nueva insignia desbloqueada!',
+      badge
+    });
+    setShowNotification(true);
+  }, []);
+
   const checkAndShowAchievements = useCallback(async (userId: string) => {
     try {
+      
       const newAchievements = await UserStatsService.checkAndAwardAchievements(userId);
       
       if (newAchievements.length > 0) {
         showAchievementUnlocked(newAchievements[0]);
       }
+      const newBadges = await UserStatsService.checkAndAwardBadges(userId)
+       if (newBadges.length > 0) {
+        showBadgesUnlocked(newBadges[0]);
+      }
     } catch (error) {
       console.error('Error verificando logros:', error);
     }
-  }, [showAchievementUnlocked]);
+  }, [showAchievementUnlocked, showBadgesUnlocked]);
 
   const dismissNotification = useCallback(() => {
     setShowNotification(false);
@@ -65,6 +80,7 @@ export const useMissionNotifications = () => {
     showMissionCompleted,
     showLevelUp,
     showAchievementUnlocked,
+    showBadgesUnlocked,
     checkAndShowAchievements,
     dismissNotification
   };

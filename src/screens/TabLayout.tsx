@@ -6,6 +6,7 @@ import HomeScreen from './HomeScreen'
 import MapScreen from './MapScreen'
 import ChallengeScreen  from './ChallengeScreen'
 import HistoryScreen from './HistoryScreen'
+import RankingScreen from './rankingScreen'
 import ProfileScreen from './ProfileScreen'
 import NotificationCenter from '../components/NotificationCenter'
 import { usePushNotifications } from '../hooks/usePushNotifications'
@@ -43,6 +44,9 @@ const TabLayout = () => {
                 </Route>
                 <Route exact path="/history">
                     <HistoryScreen />
+                </Route>
+                <Route exact path="/ranking">
+                    <RankingScreen />
                 </Route>
                 <Route exact path="/profile">
                     <ProfileScreen />
