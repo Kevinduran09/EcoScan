@@ -4,7 +4,7 @@ import { db } from '../../core/firebaseConfig';
 export interface RecyclingProgress {
   cardboard: number;
   electronicos: number;
-  glass: number;
+  vidrio: number;
   metal: number;
   organic: number;
   papel: number;

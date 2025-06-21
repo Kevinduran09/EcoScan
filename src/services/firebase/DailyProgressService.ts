@@ -1,7 +1,8 @@
-import { doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../core/firebaseConfig';
 import { eventBus, EVENTS } from '../../utils/eventBus';
 import celebration from '../../animations/celebration.json';
+import { UserStatsService } from '../UserStatsService';
 
 export interface DailyProgress {
   currentProgress: number;
@@ -116,9 +117,9 @@ export class DailyProgressService {
 
       await this.updateDailyProgress(userId, updatedProgress);
 
-      await this.grantExperience(userId, this.XP_REWARD);
-
-    
+      // Usar el método estático para añadir experiencia
+      await UserStatsService.addExperience(userId, this.XP_REWARD);
+      
       this.showDailyGoalCompletedModal(newStreak);
 
     } catch (error) {
@@ -127,24 +128,7 @@ export class DailyProgressService {
     }
   }
 
-  /**
-   * Otorgar experiencia al usuario
-   */
-  private async grantExperience(userId: string, xpAmount: number): Promise<void> {
-    try {
-      const userDocRef = doc(db, 'users', userId);
-      
-      // Actualizar XP del usuario
-      await updateDoc(userDocRef, {
-        xp: increment(xpAmount)
-      });
 
-
-    } catch (error) {
-      console.error("Error granting experience: ", error);
-      throw error;
-    }
-  }
 
   /**
    * Mostrar modal de celebración por completar meta diaria

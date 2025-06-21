@@ -14,12 +14,11 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { Link } from 'react-router-dom';
 import Avatar from '../components/Avatar';
 import { useAuth } from '../contexts/authContext';
-import Button from '../components/ui/Button';
 import { Recents } from '../components/Recents';
-import { useEventManager } from '../components/EventManager';
-import { achievementService } from '../services/AchievementService';
+
 import { useDailyValidation } from '../hooks/useDailyValidation';
-import { dailyProgressService } from '../services/firebase/DailyProgressService';
+import { achievementService } from '../services/AchievementService';
+import Button from '../components/ui/Button';
 
 const initializeStatusBar = async () => {
     try {
@@ -37,9 +36,9 @@ initializeStatusBar();
 
 const HomeScreen: React.FC = () => {
     const { achievements } = data.data;
-    const { userData, user } = useAuth();
-    const { openModal, emitLevelUp, emitBadgeUnlocked, emitMissionCompleted } = useEventManager();
-    
+    const { userData } = useAuth();
+    // const { openModal, emitLevelUp, emitBadgeUnlocked, emitMissionCompleted } = useEventManager();
+
     // Validar progreso diario al entrar
     useDailyValidation();
 
@@ -49,7 +48,7 @@ const HomeScreen: React.FC = () => {
         if (hour < 18) return '¡Buenas tardes';
         return '¡Buenas noches';
     };
-    
+
     const getMotivationalMessage = () => {
         return '¡Comienza tu día reciclando algo! 🌱';
     };
@@ -57,7 +56,7 @@ const HomeScreen: React.FC = () => {
     return (
         <IonPage >
             <IonContent fullscreen>
-                <div className="gradient-primary flex-1">
+                <div className="gradient-primary flex-1 pb-5">
                     <Container padding="sm" className="pt-6 space-y-5">
                         {/* Header */}
                         <div className='flex justify-between items-center mb-5'>
@@ -105,8 +104,28 @@ const HomeScreen: React.FC = () => {
                         <QuickActions />
 
                         <Recents />
-                        
-                        {/* Botones de prueba para eventos desde componentes */}
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.levelUp(10, true)}
+                        >
+                            Nivel Especial (Servicio)
+                        </Button>
+
+                    </Container>
+                </div>
+            </IonContent>
+        </IonPage>
+    );
+};
+
+export default HomeScreen;
+
+
+/* 
+
+
                         <Button
                             fullWidth
                             onClick={() => emitLevelUp(5)}
@@ -136,7 +155,7 @@ const HomeScreen: React.FC = () => {
                             Probar Mission (Componente)
                         </Button>
 
-                        {/* Botones de prueba para eventos desde servicios */}
+
                         <Button
                             fullWidth
                             variant="secondary"
@@ -195,28 +214,20 @@ const HomeScreen: React.FC = () => {
                             Probar Modal Directo
                         </Button>
 
-                        {/* Botón de prueba para simular reciclaje */}
-                        <Button
-                            fullWidth
-                            variant="secondary"
-                            onClick={async () => {
-                                if (user?.uid) {
-                                    try {
-                                        await dailyProgressService.addRecycling(user.uid);
-                                        console.log('Reciclaje simulado agregado');
-                                    } catch (error) {
-                                        console.error('Error al simular reciclaje:', error);
-                                    }
-                                }
-                            }}
-                        >
-                            Simular Reciclaje (Progreso Diario)
-                        </Button>
-                    </Container>
-                </div>
-            </IonContent>
-        </IonPage>
-    );
-};
-
-export default HomeScreen;
+<Button
+    fullWidth
+    variant="secondary"
+    onClick={async () => {
+        if (user?.uid) {
+            try {
+                await dailyProgressService.addRecycling(user.uid);
+                console.log('Reciclaje simulado agregado');
+            } catch (error) {
+                console.error('Error al simular reciclaje:', error);
+            }
+        }
+    }}
+>
+    Simular Reciclaje (Progreso Diario)
+</Button>
+*/

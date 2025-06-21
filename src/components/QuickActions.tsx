@@ -1,5 +1,5 @@
 import { IonIcon } from '@ionic/react';
-import { camera, time, map, trophy } from 'ionicons/icons';
+import { camera, time, trophy, notifications } from 'ionicons/icons';
 import Card from './Card';
 import Title from './ui/Title';
 import Text from './ui/Text';
@@ -30,11 +30,11 @@ const actions: Array<{
 
     },
     {
-      icon: map,
+      icon: notifications,
       color: '#efa511',
-      title: 'Mapas',
-      description: 'Encuentra puntos de reciclaje cerca de ti',
-      to: '/map',
+      title: 'Notificaciones',
+      description: 'Consulta todas tus notificaciones',
+      to: '/notifications',
 
     },
     {

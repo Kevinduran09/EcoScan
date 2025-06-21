@@ -13,7 +13,6 @@ import {
   IonBadge,
   IonFab,
   IonFabButton,
-  IonModal,
   IonButtons,
   IonBackButton,
   IonItemSliding,
@@ -27,7 +26,6 @@ import {
   notificationsOutline,
   trashOutline,
   checkmarkOutline,
-  closeOutline,
   refreshOutline,
 } from 'ionicons/icons';
 import PushNotificationService from '../services/PushNotificationService';
@@ -41,7 +39,7 @@ interface Notification {
   date: string;
 }
 
-const NotificationCenter: React.FC = () => {
+const NotificationScreen: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showToast, setShowToast] = useState(false);
@@ -250,4 +248,4 @@ const NotificationCenter: React.FC = () => {
   );
 };
 
-export default NotificationCenter; 
+export default NotificationScreen; 

@@ -1,17 +1,15 @@
-import React from 'react'
 import { CustomTabBar } from '../CustomTabBar'
 import { Redirect, Route } from 'react-router'
-import { IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonBadge } from '@ionic/react'
+import { IonRouterOutlet, IonTabs } from '@ionic/react'
 import HomeScreen from './HomeScreen'
 import MapScreen from './MapScreen'
 import ChallengeScreen  from './ChallengeScreen'
 import HistoryScreen from './HistoryScreen'
 import RankingScreen from './rankingScreen'
 import ProfileScreen from './ProfileScreen'
-import NotificationCenter from '../components/NotificationCenter'
-import { usePushNotifications } from '../hooks/usePushNotifications'
+import NotificationScreen from './NotificationScreen'
 import { StatusBar, Style } from '@capacitor/status-bar'
-import { home, map, trophy, list, person, notificationsOutline } from 'ionicons/icons'
+import { usePushNotifications } from '../hooks/usePushNotifications'
 
 const initializeStatusBar = async () => {
     try {
@@ -28,7 +26,7 @@ const initializeStatusBar = async () => {
 initializeStatusBar();
 
 const TabLayout = () => {
-    const { unreadCount } = usePushNotifications();
+    usePushNotifications();
 
     return (
         <IonTabs className="ion-page">
@@ -52,13 +50,21 @@ const TabLayout = () => {
                     <ProfileScreen />
                 </Route>
                 <Route exact path="/notifications">
-                    <NotificationCenter />
+                    <NotificationScreen />
                 </Route>
                 <Route exact path="/">
                     <Redirect to="/home" />
                 </Route>
             </IonRouterOutlet>
-            <IonTabBar slot="bottom" style={{
+            <CustomTabBar/>
+        </IonTabs>
+    )
+}
+
+export default TabLayout
+
+
+/*    <IonTabBar slot="bottom" style={{
                 borderTop: '1px solid #ddd',
                 boxShadow: '0 -2px 5px rgba(0,0,0,0.1)',
                 paddingTop: '5px',
@@ -91,9 +97,4 @@ const TabLayout = () => {
                         <IonBadge color="danger">{unreadCount}</IonBadge>
                     )}
                 </IonTabButton>
-            </IonTabBar>
-        </IonTabs>
-    )
-}
-
-export default TabLayout
+            </IonTabBar> */

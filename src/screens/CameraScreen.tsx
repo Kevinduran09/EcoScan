@@ -371,14 +371,9 @@ const CameraScreen: React.FC = () => {
 
         {/* bottom bar */}
         <div className='absolute bottom-0 left-0 right-0 flex items-center justify-between px-12 py-4 bg-black opacity-80'>
-          <IonButton
-            fill="clear"
-          >
-            <IonIcon
-              icon={square}
-              className='size-8 text-white'
-            />
-          </IonButton>
+         <div>
+          
+         </div>
 
           <div className='absolute left-1/2 -translate-x-1/2 bg-white size-24 rounded-full flex items-center justify-center p-1 bottom-6 z-10'>
             <IonButton
@@ -415,16 +410,6 @@ const CameraScreen: React.FC = () => {
 
         </div>
 
-        {/* Botón de prueba para nivel up */}
-        <div className="absolute top-20 right-4">
-          <IonButton
-            fill="clear"
-            onClick={() => emitLevelUp(3)}
-            className="bg-green-500 text-white rounded-full"
-          >
-            Test Level Up
-          </IonButton>
-        </div>
       </IonContent>
     </IonPage>
   );

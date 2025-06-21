@@ -231,7 +231,7 @@ export class UserStatsService {
     try {
       const userStats = await this.getUserStats(userId);
       if (!userStats) return [];
-
+      debugger
       const newBadges: string[] = [];
       const currentBadges = userStats.medals || [];
 
@@ -274,3 +274,11 @@ export class UserStatsService {
     }
   }
 } 
+
+// Exportar la función addExperience como función independiente
+export const addExperience = UserStatsService.addExperience;
+
+// Exportar singleton de UserStatsService
+export const userStatsService = new UserStatsService();
+
+

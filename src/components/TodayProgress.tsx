@@ -37,7 +37,8 @@ const TodayProgress: React.FC = () => {
 
         loadDailyStats();
     }, [user?.uid]);
-
+ 
+    
     const currentItems = dailyStats ? dailyStats.currentProgress : 0
     const targetItems = dailyStats ? dailyStats.targetDaily : 3;
     const progressPercentage = dailyStats ? dailyStats.progressPercentage : Math.min((currentItems / targetItems) * 100, 100);

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">proyecto1-una</string>
-    <string name="title_activity_main">proyecto1-una</string>
-    <string name="package_name">com.proyecto1.una</string>
-    <string name="custom_url_scheme">com.proyecto1.una</string>
+    <string name="app_name">EcoScan - App</string>
+    <string name="title_activity_main">EcoScan - App</string>
+    <string name="package_name">io.ionic.starter</string>
+    <string name="custom_url_scheme">io.ionic.starter</string>
 </resources>

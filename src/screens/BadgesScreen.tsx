@@ -48,7 +48,6 @@ const BadgesScreen: React.FC = () => {
     }
 
     const total = badges.length;
-    const completed = badges.filter((b) => b.completed).length;
     const badgesToUser = userData?.medals || []
     return (
         <IonPage>
@@ -59,7 +58,7 @@ const BadgesScreen: React.FC = () => {
                     className='pb-8'
                 >
 
-                 
+
                     <div className="relative px-6 pt-3 pb-6 bg-gradient-to-b from-[#7b5fff] to-[#5f4bb6] rounded-b-3xl shadow-lg">
                         <div className="flex justify-between items-center w-full">
                             <IonIcon onClick={handleBack} icon={arrowBack} className="size-8 text-white bg-white/20 rounded-full p-2" />
@@ -68,11 +67,11 @@ const BadgesScreen: React.FC = () => {
                             </Title>
                             <div>
                                 <div className="flex items-center gap-2 text-yellow-300 font-semibold">
-                                    <span className="bg-yellow-400/20 rounded-full px-3 py-1 text-xs">{`Insignias: ${completed}/${total}`}</span>
+                                    <span className="bg-yellow-400/20 rounded-full px-3 py-1 text-xs">{`Insignias: ${badgesToUser.length}/${total}`}</span>
                                 </div>
                             </div>
                         </div>
-                     
+
                         <div className="flex mt-6">
                             <button className="flex-1 !py-4 text-center font-bold !rounded-xl bg-white/20 text-white" disabled>
                                 Insignias
@@ -94,7 +93,7 @@ const BadgesScreen: React.FC = () => {
                                     return (
                                         <div
                                             key={badge.id}
-                                            className={`bg-[#23243a] space-y-3 rounded-2xl p-4 flex flex-col items-center shadow-lg transition-all duration-300 ${!isUnlocked ? 'grayscale opacity-50' : ''}`}
+                                            className={`bg-[#23243a] relative space-y-3 rounded-2xl p-4 flex flex-col items-center shadow-lg transition-all duration-300 ${!isUnlocked ? 'grayscale opacity-50' : ''}`}
                                         >
                                             <div
                                                 className={`size-28 rounded-full bg-zinc-900 flex items-center justify-center overflow-hidden ${badge.color} mb-2`}
@@ -109,6 +108,13 @@ const BadgesScreen: React.FC = () => {
                                             <span className="text-xs text-zinc-300 text-center mb-2">
                                                 {badge.description}
                                             </span>
+                                            {
+                                                !isUnlocked && (
+                                                    <div className='absolute top-0 right-0 p-2'>
+                                                        <span className='text-4xl'>🔒</span>
+                                                    </div>
+                                                )
+                                            }
                                         </div>
                                     );
                                 })}

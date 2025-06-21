@@ -1,6 +1,7 @@
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
-import { auth, authReady } from '../core/firebaseConfig';
+import { auth, authReady, db } from '../core/firebaseConfig';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 class PushNotificationService {
   private static instance: PushNotificationService;
@@ -80,7 +81,6 @@ class PushNotificationService {
         console.warn('Usuario no autenticado. Token no guardado.');
         return;
       }
-
       const platform = Capacitor.getPlatform();
       const payload = {
         token,
@@ -89,26 +89,16 @@ class PushNotificationService {
           platform,
           appVersion: '1.0.0',
         },
+        updatedAt: serverTimestamp(),
+        isActive: true
       };
-
-      console.log('Enviando token al backend:', payload);
-
-      const response = await fetch('http://10.0.2.2:3001/api/save-device-token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        console.log('Token guardado correctamente');
-      } else {
-        const errText = await response.text();
-        console.error('Error al guardar token. Respuesta:', errText);
-      }
+      await setDoc(doc(db, "deviceTokens", user.uid), payload);
+      alert("✅ Token guardado correctamente");
     } catch (error) {
-      console.error('Error en saveTokenToServer:', error);
+      alert("❌ Error al guardar token: " + error);
     }
   }
+
 
   public getNotifications() {
     return this.notifications;

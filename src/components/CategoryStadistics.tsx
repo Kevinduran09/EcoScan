@@ -31,7 +31,7 @@ export const CategoryStadistics = ({ user }: { user: User }) => {
     const mockStats = [
         { label: 'Metal', count: recyclingProgress?.metal ?? 0, color: '#A4A4A4', icon: '🥫' },
         { label: 'Plástico', count: recyclingProgress?.plastico ?? 0, color: '#2A9DF4', icon: '♻️' },
-        { label: 'Vidrio', count: recyclingProgress?.glass ?? 0, color: '#3CB043', icon: '🍶' },
+        { label: 'Vidrio', count: recyclingProgress?.vidrio ?? 0, color: '#3CB043', icon: '🍶' },
         { label: 'Cartón', count: recyclingProgress?.cardboard ?? 0, color: '#FFA500', icon: '📦' },
         { label: 'Orgánico', count: recyclingProgress?.organic ?? 0, color: '#76C043', icon: '🥬' },
         { label: 'Papel', count: recyclingProgress?.papel ?? 0, color: '#8B4513', icon: '📄' },
