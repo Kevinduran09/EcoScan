@@ -79,7 +79,7 @@ export const useMissionNotifications = () => {
       if (newBadges.length > 0) {
         showBadgesUnlocked(newBadges[0]);
       }
-      debugger
+  
       // Verificar títulos
       const userStats = await UserStatsService.getUserStats(userId);
       if (userStats) {

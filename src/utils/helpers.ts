@@ -1,12 +1,10 @@
-export function extractJSONFromResponse(responseText: string): any | null {
+export function extractJSONFromResponse(responseText: string): Record<string, unknown> | null {
     try {
-        // Elimina etiquetas de bloque tipo ```json o ```
         const cleanText = responseText
             .replace(/```json\s*/gi, '')
             .replace(/```/g, '')
             .trim();
 
-        // Encuentra el primer bloque de texto que parezca un JSON válido
         const match = cleanText.match(/{[\s\S]*}/);
         if (!match) return null;
 

@@ -3,6 +3,7 @@ import { db } from '../../core/firebaseConfig';
 import { eventBus, EVENTS } from '../../utils/eventBus';
 import { UserStatsService } from '../UserStatsService';
 import dailyCelebration from '../../animations/dailyQuest.json'
+
 export interface DailyProgress {
   currentProgress: number;
   lastRecycleDate: string; // ISO string
@@ -21,6 +22,7 @@ export class DailyProgressService {
    */
   async getDailyProgress(userId: string): Promise<DailyProgress> {
     try {
+
       const progressDocRef = doc(db, 'users', userId, 'dailyProgress', 'progress');
       const docSnap = await getDoc(progressDocRef);
       

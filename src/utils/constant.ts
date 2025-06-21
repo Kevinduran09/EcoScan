@@ -202,26 +202,28 @@ export const getUpcomingAchievements = (
     }
 
     // Obtener el valor actual del usuario para el tipo de condición
-    let currentValue: number;
-    switch (achievement.condition.type) {
-      case 'level':
-        currentValue = userStats.level;
-        break;
-      case 'totalRecycled':
-        currentValue = userStats.totalRecycled;
-        break;
-      case 'dailyMissionStreak':
-        currentValue = userStats.dailyMissionStreak;
-        break;
-      default:
-        return false;
-    }
-
-    // Incluir logros que estén a máximo un 50% de distancia del objetivo
+    const currentValue = getCurrentValueForCondition(achievement.condition.type, userStats);
     const targetValue = achievement.condition.value;
-    const progress = currentValue / targetValue;
-    return progress >= 0.5 && progress < 1;
+    
+    // Incluir logros que estén a máximo un 50% de distancia del objetivo
+    return currentValue >= targetValue * 0.5;
   });
+};
+
+const getCurrentValueForCondition = (
+  conditionType: string,
+  userStats: { level: number; totalRecycled: number; dailyMissionStreak: number }
+): number => {
+  switch (conditionType) {
+    case 'level':
+      return userStats.level;
+    case 'totalRecycled':
+      return userStats.totalRecycled;
+    case 'dailyMissionStreak':
+      return userStats.dailyMissionStreak;
+    default:
+      return 0;
+  }
 };
 
 // Función helper para calcular el progreso de un logro específico
@@ -229,30 +231,11 @@ export const getAchievementProgress = (
   achievement: Achievement,
   userStats: { level: number; totalRecycled: number; dailyMissionStreak: number }
 ): { current: number; target: number; percentage: number } => {
-  let currentValue: number;
+  const current = getCurrentValueForCondition(achievement.condition.type, userStats);
+  const target = achievement.condition.value;
+  const percentage = Math.min((current / target) * 100, 100);
   
-  switch (achievement.condition.type) {
-    case 'level':
-      currentValue = userStats.level;
-      break;
-    case 'totalRecycled':
-      currentValue = userStats.totalRecycled;
-      break;
-    case 'dailyMissionStreak':
-      currentValue = userStats.dailyMissionStreak;
-      break;
-    default:
-      currentValue = 0;
-  }
-
-  const targetValue = achievement.condition.value;
-  const percentage = Math.min(100, Math.max(0, (currentValue / targetValue) * 100));
-
-  return {
-    current: currentValue,
-    target: targetValue,
-    percentage
-  };
+  return { current, target, percentage };
 };
 
 // Función helper para obtener logros por categoría con progreso
@@ -261,8 +244,8 @@ export const getAchievementsWithProgress = (
   currentAchievements: string[]
 ): Array<Achievement & { progress: { current: number; target: number; percentage: number }; unlocked: boolean }> => {
   return ACHIEVEMENTS.map(achievement => {
-    const progress = getAchievementProgress(achievement, userStats);
     const unlocked = currentAchievements.includes(achievement.id);
+    const progress = getAchievementProgress(achievement, userStats);
     
     return {
       ...achievement,

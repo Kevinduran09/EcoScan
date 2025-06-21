@@ -103,7 +103,7 @@ export class UserStatsService {
    */
   static async onMissionCompleted(userId: string, mission: Mission): Promise<void> {
     try {
-      debugger
+
       // Añadir experiencia de la misión
       const result = await this.addExperience(userId, mission.xp);
       
@@ -193,7 +193,7 @@ export class UserStatsService {
    */
   static async checkAndAwardAchievements(userId: string): Promise<string[]> {
     try {
-      debugger
+  
       const userStats = await this.getUserStats(userId);
       if (!userStats) return [];
 

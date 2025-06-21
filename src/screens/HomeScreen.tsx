@@ -35,7 +35,8 @@ const HomeScreen: React.FC = () => {
     const { user,userData } = useAuth();
   
     // const { openModal, emitLevelUp, emitBadgeUnlocked, emitMissionCompleted } = useEventManager();
-
+    console.log(userData?.id);
+    
     // Validar progreso diario al entrar
     useDailyValidation();
 
@@ -99,8 +100,8 @@ const HomeScreen: React.FC = () => {
 
                         {/* Daily Goals */}
                         <div className='flex flex-row justify-stretch gap-5'>
-                            <StreakCard uuid={user?.uid}/>
-                            <StatsCard title='Logros' value={achievementsValue} />
+                            <StreakCard userId={userData?.id || ''}/>
+                            <StatsCard value={userData?.achievements?.length || 0} label='Logros' />
                         </div>
 
                         {/* Progress today */}

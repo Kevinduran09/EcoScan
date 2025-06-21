@@ -2,26 +2,27 @@ import { IonIcon } from '@ionic/react';
 import React from 'react'
 import { trophy } from 'ionicons/icons';
 import Card from './Card';
-// import Title from './ui/Title';
 import Text from './ui/Text';
+import { ACHIEVEMENTS } from '../utils/constant';
 
 interface StatsCardProps {
-    title: string;
-    value: string;
+  value: number;
+  label: string;
+  icon?: string;
 }
 
-const StatsCard = ({ title, value }: StatsCardProps) => {
-    return (
-        <Card className='py-4 px-3'>
-            <div className="flex justify-center items-center h-full space-x-2.5">
-                <IonIcon icon={trophy} className='text-[#fdd700] size-8 bg-[#fdd700]/20 rounded-full p-2' ></IonIcon>
-                <div className=''>
-                    <Text color='black' className='!font-bold !text-2xl'>{value}</Text>
-                    <Text size="sm" color="gray">{title}</Text>
-                </div>
-            </div>
-        </Card>
-    )
-}
+const StatsCard: React.FC<StatsCardProps> = ({ value, label, icon }) => {
+  return (
+    <Card className="p-4">
+      <div className="flex items-center space-x-3">
+              <IonIcon icon={trophy} className='text-[#fdd700] size-8 bg-[#fdd700]/20 rounded-full p-2' ></IonIcon>
+        <div>
+          <Text className="!text-sm !text-gray-600">{label}</Text>
+          <Text className="!text-xl !font-bold !text-gray-800">{value}/{ACHIEVEMENTS.length}</Text>
+        </div>
+      </div>
+    </Card>
+  );
+};
 
-export default StatsCard
+export default StatsCard;

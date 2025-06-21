@@ -144,5 +144,6 @@ export const playSuccessSound = () => soundEffects.playSuccessSound();
 export const playErrorSound = () => soundEffects.playErrorSound();
 export const playConfirmSound = () => soundEffects.playConfirmSound();
 export const playCameraSound = () => soundEffects.playCameraSound();
+export const vibrate = (pattern?: number | number[]) => soundEffects.vibrate(pattern);
 export const playSuccessWithVibration = () => soundEffects.playSuccessWithVibration();
 export const playErrorWithVibration = () => soundEffects.playErrorWithVibration(); 
