@@ -76,7 +76,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
           <>
             {imageUrl && (
               <div className="flex flex-col items-center mb-8">
-                <img src={imageUrl} alt="imagen" className="size-72 !bg-green-800 flex items-center justify-center overflow-hidden rounded-full" />
+                <img src={imageUrl} alt="imagen" className="size-72 flex items-center justify-center " />
               </div>
             )}
             {title && <h2>{title}</h2>}

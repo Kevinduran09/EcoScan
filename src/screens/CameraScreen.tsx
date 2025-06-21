@@ -6,7 +6,6 @@ import '../theme/camera.css'
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { arrowBack, camera, cameraReverse, flash, flashOff, square } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
-import NivelSubidoModal from '../components/NivelSubidoModal';
 import Title from '../components/ui/Title';
 import { CameraService } from '../services/firebase/CameraService';
 import { ReponseInterface } from '../types/responseTypes';
@@ -16,6 +15,8 @@ import { LocalStorageService } from '../services/LocalStorageService';
 import { SuccessModal } from '../components/SuccessModal';
 import { MissionNotification } from '../components/MissionNotification';
 import { useMissionNotifications } from '../hooks/useMissionNotifications';
+import { useEventManager } from '../components/EventManager';
+import { dailyProgressService } from '../services/firebase/DailyProgressService';
 
 const initializeStatusBar = async () => {
   try {
@@ -41,6 +42,7 @@ initializeStatusBar();
 const CameraScreen: React.FC = () => {
   const history = useHistory()
   const { user } = useAuth()
+  const { emitLevelUp } = useEventManager();
   const [previewData, setPreviewData] = useState<PreviewData>({
     show: false,
     title: '',
@@ -56,7 +58,6 @@ const CameraScreen: React.FC = () => {
   const [showErrorToast, setShowErrorToast] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const isNative = Capacitor.isNativePlatform()
-  const [image, setImage] = useState<string | null>(null);
 
   const {
     showNotification,
@@ -93,11 +94,15 @@ const CameraScreen: React.FC = () => {
         response.tipo, 
         "residuo"
       );
+      
       // Guardar registro en Firestore
       await cameraService.saveRecycleRecord(user.uid, imageUrl, response.tipo);
 
       // Verificar si se completó alguna misión y mostrar notificación
       await checkAndShowAchievements(user.uid);
+
+      // Actualizar progreso diario usando el nuevo servicio
+      await dailyProgressService.addRecycling(user.uid);
 
       return imageUrl;
     } catch (error) {
@@ -410,12 +415,16 @@ const CameraScreen: React.FC = () => {
 
         </div>
 
-        <NivelSubidoModal
-          url={image}
-          show={!!image}
-          nivel={1}
-          onClose={() => setImage(null)}
-        />
+        {/* Botón de prueba para nivel up */}
+        <div className="absolute top-20 right-4">
+          <IonButton
+            fill="clear"
+            onClick={() => emitLevelUp(3)}
+            className="bg-green-500 text-white rounded-full"
+          >
+            Test Level Up
+          </IonButton>
+        </div>
       </IonContent>
     </IonPage>
   );

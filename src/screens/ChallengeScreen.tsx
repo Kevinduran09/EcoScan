@@ -47,6 +47,7 @@ const ChallengeScreen = () => {
     error,
     loadMissions,
     refreshMissions,
+    completeMission,
   } = useMissionsStore();
 
   useIonViewWillEnter(() => {
@@ -60,6 +61,13 @@ const ChallengeScreen = () => {
   const handleRefresh = async () => {
     if (user?.uid) {
       await refreshMissions(user.uid);
+    }
+  };
+
+  // Función para completar misión
+  const handleCompleteMission = async (missionId: string) => {
+    if (user?.uid) {
+      await completeMission(user.uid, missionId);
     }
   };
 
@@ -176,7 +184,11 @@ const ChallengeScreen = () => {
             {/* Missions */}
             {!loading && !error && missions.length > 0 && (
               missions.map((mission) => (
-                <MissionCard mission={mission} key={mission.id} />
+                <MissionCard 
+                  mission={mission} 
+                  key={mission.id} 
+                  onCompleteMission={handleCompleteMission}
+                />
               ))
             )}
 
@@ -193,7 +205,7 @@ const ChallengeScreen = () => {
             )}
           </LinearGradient>
         ) : (
-          <LinearGradient colors={['#FF6B6B', '#FFD93D']} direction="to bottom" className="p-4 space-y-4 ">
+          <LinearGradient colors={['#FF6B6B', '#FFD93D']} direction="to bottom" className="p-4 space-y-4 h-full ">
             <Text size='2xl' weight='semibold'>Misiones completadas esta semana</Text>
 
             {completedMissions.length > 0 ? (

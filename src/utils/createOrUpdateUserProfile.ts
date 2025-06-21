@@ -47,7 +47,7 @@ export const createOrUpdateUserProfile = async (
       userData: userSnap.data() as UserProfile,
     };
   }
-  debugger
+  
   // Crear datos iniciales del perfil
   const userData: UserProfile = {
     id: user.uid,

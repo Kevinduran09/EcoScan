@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isNewUser, setIsNewUser] = useState(false);
   const [registrationData, setRegistrationData] = useState<{ displayName?: string }>({});
   
-  // Usar useRef para mantener una referencia estable a los datos de registro
+
   const registrationDataRef = useRef<{ displayName?: string }>({});
 
   const initializeDailyMissions = async (userId: string) => {

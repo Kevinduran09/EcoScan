@@ -4,11 +4,10 @@ import { useHistory } from "react-router-dom"
 import { useCallback, useState } from "react"
 import { auth, authReady } from "../../core/firebaseConfig"
 import { GoogleAuthProvider, signInWithCredential } from "firebase/auth"
-import { IonLoading } from "@ionic/react"
 import Google from '../../components/icons/Google'
 
 const HandleGoogleSignIn = () => {
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
   const history = useHistory()
 
   const signInWithGoogle = useCallback(async () => {

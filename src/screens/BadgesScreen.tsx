@@ -59,7 +59,7 @@ const BadgesScreen: React.FC = () => {
                     className='pb-8'
                 >
 
-                    {/* Header tipo Duolingo */}
+                 
                     <div className="relative px-6 pt-3 pb-6 bg-gradient-to-b from-[#7b5fff] to-[#5f4bb6] rounded-b-3xl shadow-lg">
                         <div className="flex justify-between items-center w-full">
                             <IonIcon onClick={handleBack} icon={arrowBack} className="size-8 text-white bg-white/20 rounded-full p-2" />
@@ -72,12 +72,12 @@ const BadgesScreen: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* Tabs visuales */}
+                     
                         <div className="flex mt-6">
-                            <button className="flex-1 !py-2 text-center font-bold !rounded-lg bg-white/20 text-white" disabled>
+                            <button className="flex-1 !py-4 text-center font-bold !rounded-xl bg-white/20 text-white" disabled>
                                 Insignias
                             </button>
-                            <button className="flex-1 !py-2 text-center font-bold !rounded-t-lg text-white/60" disabled>
+                            <button className="flex-1 !py-4 text-center font-bold !rounded-t-xl text-white/60" disabled>
                                 Logros
                             </button>
                         </div>

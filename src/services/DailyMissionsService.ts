@@ -103,17 +103,18 @@ export class DailyMissionsService {
   static async completeMission(
     userId: string, 
     missionId: string,
-    onMissionCompleted?: (mission: Mission) => void
   ): Promise<void> {
     try {
-      // Obtener la misión para acceder a sus datos (XP, etc.)
-      const missions = await this.getTodayMissions(userId);
-      const mission = missions.find(m => m.id === missionId);
-      
+      const mission = this.findMissionById(userId, missionId);
       if (!mission) {
         throw new Error('Misión no encontrada');
       }
-      debugger
+
+      if (mission.estado === 'completada') {
+        console.log('⚠️ Misión ya completada');
+        return;
+      }
+      
       // Actualizar en Firebase
       await this.completeMissionInFirebase(userId, missionId);
       
@@ -121,15 +122,12 @@ export class DailyMissionsService {
       this.completeMissionInLocal(userId, missionId);
       
       // Actualizar estadísticas del usuario (XP, nivel, logros, etc.)
-      const result = await UserStatsService.onMissionCompleted(userId, mission);
+      await UserStatsService.onMissionCompleted(userId, mission);
       
       // Verificar y otorgar logros
       await UserStatsService.checkAndAwardAchievements(userId);
       
-      // Notificar callback si existe
-      if (onMissionCompleted) {
-        onMissionCompleted(mission);
-      }
+  
       
     } catch (error) {
       console.warn('⚠️ Error completando misión en Firebase, usando solo local:', error);
@@ -191,7 +189,7 @@ export class DailyMissionsService {
     missionId: string, 
     increment: number
   ): Promise<void> {
-    debugger
+    
     const today = this.getTodayDateString();
     const missionsRef = doc(db, `users/${userId}/dailyMissions`, today);
     const missionSnap = await getDoc(missionsRef);
@@ -414,5 +412,17 @@ export class DailyMissionsService {
       missions,
       lastUpdated: serverTimestamp(),
     });
+  }
+
+  private static findMissionById(userId: string, missionId: string): Mission | null {
+    try {
+      const data = this.getLocalMissionsData(userId);
+      if (data) {
+        return data.missions.find((m: Mission) => m.id === missionId) || null;
+      }
+    } catch (error) {
+      console.error('❌ Error buscando misión:', error);
+    }
+    return null;
   }
 } 

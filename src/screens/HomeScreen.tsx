@@ -1,5 +1,4 @@
 import { IonContent, IonPage } from '@ionic/react';
-import { useState } from 'react';
 import '../theme/variables.css';
 import LevelProgress from '../components/LevelProgress';
 import Card from '../components/Card';
@@ -15,12 +14,13 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { Link } from 'react-router-dom';
 import Avatar from '../components/Avatar';
 import { useAuth } from '../contexts/authContext';
-import NivelSubidoModal from '../components/NivelSubidoModal';
 import Button from '../components/ui/Button';
 import { Recents } from '../components/Recents';
-import { useGlobalModal } from '../contexts/GlobalModalContext';
-import celebration from '../animations/celebration.json';
-import jedi from '../animations/jedi_leveluo.json'
+import { useEventManager } from '../components/EventManager';
+import { achievementService } from '../services/AchievementService';
+import { useDailyValidation } from '../hooks/useDailyValidation';
+import { dailyProgressService } from '../services/firebase/DailyProgressService';
+
 const initializeStatusBar = async () => {
     try {
         await StatusBar.setStyle({ style: Style.Light });
@@ -34,12 +34,15 @@ const initializeStatusBar = async () => {
 
 // Inicializar StatusBar
 initializeStatusBar();
+
 const HomeScreen: React.FC = () => {
     const { achievements } = data.data;
-    const [leveUp, setleveUp] = useState(false)
-    const [todayItems] = useState([2, 3, 4]);
-    const {  userData } = useAuth();
-    const { openModal } = useGlobalModal();
+    const { userData, user } = useAuth();
+    const { openModal, emitLevelUp, emitBadgeUnlocked, emitMissionCompleted } = useEventManager();
+    
+    // Validar progreso diario al entrar
+    useDailyValidation();
+
     const getGreeting = () => {
         const hour = new Date().getHours();
         if (hour < 12) return '¡Buenos días';
@@ -48,13 +51,7 @@ const HomeScreen: React.FC = () => {
     };
     
     const getMotivationalMessage = () => {
-        if (todayItems.length === 0) {
-            return '¡Comienza tu día reciclando algo! 🌱';
-        }
-        if (todayItems.length < 3) {
-            return `¡Vas genial! Recicla ${3 - todayItems.length} más para mantener tu racha 🔥`;
-        }
-        return '¡Increíble! Ya cumpliste tu meta diaria 🎉';
+        return '¡Comienza tu día reciclando algo! 🌱';
     };
 
     return (
@@ -104,37 +101,119 @@ const HomeScreen: React.FC = () => {
                         </div>
 
                         {/* Progress today */}
-                        <TodayProgress items={todayItems} />
+                        <TodayProgress />
                         <QuickActions />
 
                         <Recents />
+                        
+                        {/* Botones de prueba para eventos desde componentes */}
                         <Button
                             fullWidth
-                            onClick={() => setleveUp(true)}
+                            onClick={() => emitLevelUp(5)}
                         >
-                            Subir nivel
+                            Subir nivel (Componente)
                         </Button>
+                        
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => emitBadgeUnlocked({
+                                name: "Reciclador Novato",
+                                description: "Has reciclado tu primer objeto"
+                            })}
+                        >
+                            Probar Badge (Componente)
+                        </Button>
+                        
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => emitMissionCompleted({
+                                title: "Reciclar 5 botellas",
+                                xp: 50
+                            })}
+                        >
+                            Probar Mission (Componente)
+                        </Button>
+
+                        {/* Botones de prueba para eventos desde servicios */}
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.levelUp(10, true)}
+                        >
+                            Nivel Especial (Servicio)
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.unlockBadge(
+                                "Reciclador Experto", 
+                                "Has reciclado 100 objetos diferentes",
+                                "https://badges.com/experto.png"
+                            )}
+                        >
+                            Badge con Imagen (Servicio)
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.completeMission(
+                                "Misión Diaria Completa",
+                                100,
+                                true
+                            )}
+                        >
+                            Misión Especial (Servicio)
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={() => achievementService.unlockSpecialAchievement(
+                                "Reciclador Legendario",
+                                "Has reciclado 1000 objetos en total"
+                            )}
+                        >
+                            Logro Especial (Servicio)
+                        </Button>
+                        
                         <Button
                             fullWidth
                             variant="secondary"
                             onClick={() => openModal({
                                 title: '¡Nivel subido!',
                                 description: '¡Has alcanzado un nuevo nivel!',
-                                animation: jedi,
+                                imageUrl:'https://firebasestorage.googleapis.com/v0/b/proyecto-1-una.firebasestorage.app/o/badges%2F1750399011892.png?alt=media&token=8c25c15a-dd0d-45b1-8050-af0508e412e5',
                                 sound: '/level-up.mp3',
                                 vibrate: true,
                                 buttonText: '¡Genial!',
                             })}
                         >
-                            Probar Modal Global
+                            Probar Modal Directo
+                        </Button>
+
+                        {/* Botón de prueba para simular reciclaje */}
+                        <Button
+                            fullWidth
+                            variant="secondary"
+                            onClick={async () => {
+                                if (user?.uid) {
+                                    try {
+                                        await dailyProgressService.addRecycling(user.uid);
+                                        console.log('Reciclaje simulado agregado');
+                                    } catch (error) {
+                                        console.error('Error al simular reciclaje:', error);
+                                    }
+                                }
+                            }}
+                        >
+                            Simular Reciclaje (Progreso Diario)
                         </Button>
                     </Container>
                 </div>
-                <NivelSubidoModal
-                    show={leveUp}
-                    nivel={1}
-                    onClose={() => { setleveUp(false) }}
-                />
             </IonContent>
         </IonPage>
     );
