@@ -17,41 +17,41 @@ class PushNotificationService {
 
   async initialize() {
     if (this.initialized) {
-      console.log('[Push] Ya inicializado');
+      console.log('Ya inicializado');
       return;
     }
 
     try {
-      console.log('[Push] Solicitando permisos...');
+      console.log('Solicitando permisos...');
       const result = await PushNotifications.requestPermissions();
 
       if (result.receive !== 'granted') {
-        console.warn('[Push] Permisos denegados ❌');
+        console.warn('Permisos denegados');
         return;
       }
 
-      console.log('[Push] Permisos otorgados ✅');
+      console.log('Permisos otorgados');
       await PushNotifications.register();
 
       this.setupListeners();
       this.initialized = true;
     } catch (error) {
-      console.error('[Push] Error al inicializar notificaciones push:', error);
+      console.error('Error al inicializar notificaciones push:', error);
     }
   }
 
   private setupListeners() {
     PushNotifications.addListener('registration', async (token) => {
-      console.log('[Push] Token recibido:', token.value);
+      console.log('Token recibido:', token.value);
       await this.saveTokenToServer(token.value);
     });
 
     PushNotifications.addListener('registrationError', (error) => {
-      console.error('[Push] Error en el registro:', error);
+      console.error('Error en el registro:', error);
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('[Push] Notificación recibida:', notification);
+      console.log('Notificación recibida:', notification);
 
       const newNotification = {
         id: Date.now().toString(),
@@ -67,7 +67,7 @@ class PushNotificationService {
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-      console.log('[Push] Acción en notificación:', notification);
+      console.log('Acción en notificación:', notification);
     });
   }
 
@@ -77,7 +77,7 @@ class PushNotificationService {
       const user = auth.currentUser;
 
       if (!user) {
-        console.warn('[Push] Usuario no autenticado. Token no guardado.');
+        console.warn('Usuario no autenticado. Token no guardado.');
         return;
       }
 
@@ -91,7 +91,7 @@ class PushNotificationService {
         },
       };
 
-      console.log('[Push] Enviando token al backend:', payload);
+      console.log('Enviando token al backend:', payload);
 
       const response = await fetch('http://10.0.2.2:3001/api/save-device-token', {
         method: 'POST',
@@ -100,13 +100,13 @@ class PushNotificationService {
       });
 
       if (response.ok) {
-        console.log('[Push] Token guardado correctamente ✅');
+        console.log('Token guardado correctamente');
       } else {
         const errText = await response.text();
-        console.error('[Push] Error al guardar token. Respuesta:', errText);
+        console.error('Error al guardar token. Respuesta:', errText);
       }
     } catch (error) {
-      console.error('[Push] Error en saveTokenToServer:', error);
+      console.error('Error en saveTokenToServer:', error);
     }
   }
 
