@@ -7,7 +7,7 @@ import Text from './ui/Text';
 import { useAuth } from '../contexts/authContext';
 import { dailyProgressService } from '../services/firebase/DailyProgressService';
 
-interface dailyStatsInterface{
+interface dailyStatsInterface {
     currentProgress: number;
     targetDaily: number;
     dailyStreak: number;
@@ -23,10 +23,10 @@ const TodayProgress: React.FC = () => {
     useIonViewWillEnter(() => {
         const loadDailyStats = async () => {
             if (!user?.uid) return;
-            
+
             try {
                 setLoading(true);
-           
+
                 const stats = await dailyProgressService.getDailyStats(user.uid);
                 setDailyStats(stats);
             } catch (error) {
@@ -38,8 +38,8 @@ const TodayProgress: React.FC = () => {
 
         loadDailyStats();
     });
- 
-    
+
+
     const currentItems = dailyStats ? dailyStats.currentProgress : 0
     const targetItems = dailyStats ? dailyStats.targetDaily : 3;
     const progressPercentage = dailyStats ? dailyStats.progressPercentage : Math.min((currentItems / targetItems) * 100, 100);
@@ -64,18 +64,18 @@ const TodayProgress: React.FC = () => {
                         {currentItems}/{targetItems}
                     </Text>
                 </div>
-                
+
                 {/* Progress bar */}
                 <div className='mb-5'>
                     <div className='w-full h-2 bg-white/20 rounded-full mb-2.5'>
-                        <div 
-                            className='h-full rounded-full bg-green-500 transition-all duration-300' 
+                        <div
+                            className='h-full rounded-full bg-green-500 transition-all duration-300'
                             style={{ width: `${progressPercentage}%` }}
                         ></div>
                     </div>
                     <Text size="base" color="black" className="text-center mt-2.5 text-zinc-600/90 !font-semibold">
-                        {isCompleted 
-                            ? "¡Increíble! Ya cumpliste tu meta diaria 🎉" 
+                        {isCompleted
+                            ? "¡Increíble! Ya cumpliste tu meta diaria 🎉"
                             : `${targetItems - currentItems} más para mantener tu racha 🔥`
                         }
                     </Text>
