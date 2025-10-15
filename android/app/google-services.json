@@ -1,49 +1,41 @@
 {
   "project_info": {
-    "project_number": "693187086355",
-    "project_id": "proyecto-1-una",
-    "storage_bucket": "proyecto-1-una.firebasestorage.app"
+    "project_number": "695893581307",
+    "project_id": "ecoscan-f8c3e",
+    "storage_bucket": "ecoscan-f8c3e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:693187086355:android:c75cca74915eacc6d317e6",
+        "mobilesdk_app_id": "1:695893581307:android:62c8467897489e0d5eff5e",
         "android_client_info": {
           "package_name": "com.proyecto1.una"
         }
       },
       "oauth_client": [
         {
-          "client_id": "693187086355-jfl09ecjb19i5o3i5qbd5rp1bjemdf1m.apps.googleusercontent.com",
+          "client_id": "695893581307-0havav33c27u599m10uacd3705sppuos.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.proyecto1.una",
-            "certificate_hash": "96f45028aeef62ecd072cdea57e9f83f2c8458f9"
+            "certificate_hash": "dc80937cc1881444cb1e26d16857fd98c1fae2ec"
           }
         },
         {
-          "client_id": "693187086355-rrj97ri5i5ndcj31hcj104qgfgup7vdo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.proyecto1.una",
-            "certificate_hash": "cb3493330cc670aad1378c288c0706528f01a6c0"
-          }
-        },
-        {
-          "client_id": "693187086355-8913p3dslpci1pihupbvuqmc31jk8e0f.apps.googleusercontent.com",
+          "client_id": "695893581307-ho4dq726ki0o4qkdh61alem243ql18jl.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDrCNPk2mh4CO3Gl1qoDEtiIi-gklub7ZM"
+          "current_key": "AIzaSyAEcyv4l_gUXiV9nUV7ctWd4sUvGxF_1FI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "693187086355-8913p3dslpci1pihupbvuqmc31jk8e0f.apps.googleusercontent.com",
+              "client_id": "695893581307-ho4dq726ki0o4qkdh61alem243ql18jl.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
