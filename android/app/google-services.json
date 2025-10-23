@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "695893581307-km5f8ldo61hnpgn6mag1sovb1cqqud1g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.proyecto1.una",
+            "certificate_hash": "da7ea253dad7082c62640bd839b65fcc94e49026"
+          }
+        },
+        {
           "client_id": "695893581307-ho4dq726ki0o4qkdh61alem243ql18jl.apps.googleusercontent.com",
           "client_type": 3
         }
